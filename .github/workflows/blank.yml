@@ -1,0 +1,32 @@
+name: Deploy to Server via SFTP
+
+on:
+  push:
+    branches:
+      - master
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Deploy to Server via SFTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: 35.159.190.103
+          username: dashm18664
+          password: ${{ secrets.SFTP_PASSWORD }}
+          protocol: ftps
+          port: 22
+          server-dir: /home/dashm18664/sites/dashm.mytesting.store/htdocs/wp-content/plugins/
+          local-dir: ./
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            .github/**
