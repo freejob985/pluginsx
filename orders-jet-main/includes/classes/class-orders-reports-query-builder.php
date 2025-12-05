@@ -2177,8 +2177,10 @@ class Orders_Reports_Query_Builder {
         // Format order details
         $orders_data = array();
         foreach ($all_orders as $order) {
+            $order_id = $order->get_id();
             $orders_data[] = array(
-                'order_id' => $order->get_id(),
+                'id' => $order_id, // Add 'id' for JavaScript compatibility
+                'order_id' => $order_id,
                 'order_number' => $order->get_order_number(),
                 'customer_name' => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()) ?: __('Guest', 'orders-jet'),
                 'status' => wc_get_order_status_name($order->get_status()),
@@ -2187,7 +2189,7 @@ class Orders_Reports_Query_Builder {
                 'total_formatted' => wc_price($order->get_total()),
                 'payment_method' => $order->get_payment_method_title() ?: __('N/A', 'orders-jet'),
                 'date_created' => $order->get_date_created()->date_i18n('M j, Y g:i a'),
-                'order_url' => admin_url('post.php?post=' . $order->get_id() . '&action=edit'),
+                'order_url' => admin_url('post.php?post=' . $order_id . '&action=edit'),
             );
         }
         

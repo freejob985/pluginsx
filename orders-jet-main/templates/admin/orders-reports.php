@@ -406,7 +406,7 @@ $sales_summary = array(
                         <th style="padding: 15px; font-weight: 600; border-bottom: 2px solid #ddd; text-align: right;"><?php _e('Completed', 'orders-jet'); ?></th>
                         <th style="padding: 15px; font-weight: 600; border-bottom: 2px solid #ddd; text-align: right;"><?php _e('Cancelled', 'orders-jet'); ?></th>
                         <th style="padding: 15px; font-weight: 600; border-bottom: 2px solid #ddd; text-align: right;"><?php _e('Revenue', 'orders-jet'); ?></th>
-                        <th style="padding: 15px; font-weight: 600; border-bottom: 2px solid #ddd; text-align: center;"><?php _e('Actions', 'orders-jet'); ?></th>
+                        <th style="padding: 15px; font-weight: 600; border-bottom: 2px solid #ddd; text-align: center;"><?php _e('Export', 'orders-jet'); ?></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -432,13 +432,24 @@ $sales_summary = array(
                             </td>
                             <td style="padding: 12px 15px; text-align: right;"><strong><?php echo $row['revenue_formatted']; ?></strong></td>
                             <td style="padding: 12px 15px; text-align: center;">
-                                <button class="button button-small oj-drill-down-btn" 
-                                        data-date="<?php echo esc_attr($row['period']); ?>"
-                                        data-label="<?php echo esc_attr($row['period_label']); ?>"
-                                        data-total-orders="<?php echo esc_attr($row['total_orders']); ?>"
-                                        onclick="console.log('Summary row clicked: <?php echo esc_js($row['period']); ?>, Total orders: <?php echo esc_js($row['total_orders']); ?>')">
-                                    <?php _e('View Details', 'orders-jet'); ?> →
-                                </button>
+                                <div style="display: flex; gap: 5px; align-items: center; justify-content: center;">
+                                    <button class="button button-small oj-drill-down-btn" 
+                                            data-date="<?php echo esc_attr($row['period']); ?>"
+                                            data-label="<?php echo esc_attr($row['period_label']); ?>"
+                                            data-total-orders="<?php echo esc_attr($row['total_orders']); ?>"
+                                            onclick="console.log('Summary row clicked: <?php echo esc_js($row['period']); ?>, Total orders: <?php echo esc_js($row['total_orders']); ?>')">
+                                        <?php _e('View Details', 'orders-jet'); ?> →
+                                    </button>
+                                    <select class="oj-period-export-select" 
+                                            data-date="<?php echo esc_attr($row['period']); ?>"
+                                            data-label="<?php echo esc_attr($row['period_label']); ?>"
+                                            style="padding: 4px 8px; font-size: 12px; height: auto; min-width: 100px;">
+                                        <option value=""><?php _e('Export...', 'orders-jet'); ?></option>
+                                        <option value="excel">📥 <?php _e('Excel', 'orders-jet'); ?></option>
+                                        <option value="csv">📄 <?php _e('CSV', 'orders-jet'); ?></option>
+                                        <option value="pdf">📑 <?php _e('PDF', 'orders-jet'); ?></option>
+                                    </select>
+                                </div>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -458,14 +469,14 @@ $sales_summary = array(
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h3 style="margin: 0; font-size: 18px; font-weight: 600;"><?php _e('Orders by Category', 'orders-jet'); ?></h3>
                 <div style="display: flex; gap: 8px;">
-                    <button class="button oj-export-btn" data-type="excel" data-report="category">
-                        <?php _e('📥 Excel', 'orders-jet'); ?>
+                    <button class="button oj-export-btn" data-type="excel" data-report="category" style="display: inline-flex; align-items: center; gap: 5px;">
+                        <span>📥</span> <span><?php _e('Excel', 'orders-jet'); ?></span>
                     </button>
-                    <button class="button oj-export-btn" data-type="csv" data-report="category">
-                        <?php _e('📄 CSV', 'orders-jet'); ?>
+                    <button class="button oj-export-btn" data-type="csv" data-report="category" style="display: inline-flex; align-items: center; gap: 5px;">
+                        <span>📄</span> <span><?php _e('CSV', 'orders-jet'); ?></span>
                     </button>
-                    <button class="button oj-export-btn" data-type="pdf" data-report="category">
-                        <?php _e('📑 PDF', 'orders-jet'); ?>
+                    <button class="button oj-export-btn" data-type="pdf" data-report="category" style="display: inline-flex; align-items: center; gap: 5px;">
+                        <span>📑</span> <span><?php _e('PDF', 'orders-jet'); ?></span>
                     </button>
                 </div>
             </div>
@@ -692,8 +703,9 @@ $sales_summary = array(
                                 ordersHtml += '<td style="padding: 12px 15px;">' + order.date_created + '</td>';
                                 ordersHtml += '<td style="padding: 12px 15px; text-align: center;">';
                                 ordersHtml += '<a href="' + order.order_url + '" class="button button-small" target="_blank" style="margin-right: 5px;"><?php _e('View', 'orders-jet'); ?></a>';
-                                ordersHtml += '<button class="button button-small oj-view-order-details" data-order-id="' + order.id + '" style="margin-right: 5px;"><?php _e('Details', 'orders-jet'); ?></button>';
-                                ordersHtml += '<button class="button button-small oj-export-order-pdf" data-order-id="' + order.id + '" data-order-number="' + order.order_number + '">📄 PDF</button>';
+                                var orderIdValue = order.id || order.order_id;
+                                ordersHtml += '<button class="button button-small oj-view-order-details" data-order-id="' + orderIdValue + '" style="margin-right: 5px;"><?php _e('Details', 'orders-jet'); ?></button>';
+                                ordersHtml += '<button class="button button-small oj-export-order-pdf" data-order-id="' + orderIdValue + '" data-order-number="' + order.order_number + '">📄 PDF</button>';
                                 ordersHtml += '</td>';
                                 ordersHtml += '</tr>';
                             });
@@ -794,8 +806,9 @@ $sales_summary = array(
 
         // Order details button handler
         $(document).on('click', '.oj-view-order-details', function() {
-            var orderId = $(this).data('order-id');
+            var orderId = $(this).data('order-id') || $(this).data('orderId');
             if (!orderId) {
+                console.error('Order ID not found. Data attributes:', $(this).data());
                 alert('<?php _e('Invalid order ID', 'orders-jet'); ?>');
                 return;
             }
@@ -836,8 +849,8 @@ $sales_summary = array(
         // Single order PDF export handler
         $(document).on('click', '.oj-export-order-pdf', function() {
             var $btn = $(this);
-            var orderId = $btn.data('order-id');
-            var orderNumber = $btn.data('order-number');
+            var orderId = $btn.data('order-id') || $btn.data('orderId');
+            var orderNumber = $btn.data('order-number') || $btn.data('orderNumber');
             var originalText = $btn.text();
             
             if (!orderId) {
@@ -856,18 +869,71 @@ $sales_summary = array(
                     nonce: ojReportsData.nonce
                 },
                 success: function(response) {
-                    if (response.success) {
+                    if (response.success && response.data && response.data.url) {
                         window.open(response.data.url, '_blank');
                         alert('<?php _e('PDF invoice generated successfully!', 'orders-jet'); ?>');
                     } else {
-                        alert('<?php _e('PDF export failed', 'orders-jet'); ?>: ' + (response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>'));
+                        var errorMsg = response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>';
+                        console.error('PDF Export Error:', response);
+                        alert('<?php _e('PDF export failed', 'orders-jet'); ?>: ' + errorMsg);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('PDF Export AJAX Error:', xhr, status, error);
+                    alert('<?php _e('Export failed. Please try again.', 'orders-jet'); ?>');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text(originalText);
+                }
+            });
+        });
+        
+        // Period export dropdown handler (for Summary Report rows)
+        $(document).on('change', '.oj-period-export-select', function() {
+            var $select = $(this);
+            var exportType = $select.val();
+            var date = $select.data('date');
+            var label = $select.data('label');
+            
+            if (!exportType || !date) {
+                $select.val(''); // Reset dropdown
+                return;
+            }
+            
+            var originalValue = $select.val();
+            $select.prop('disabled', true);
+            
+            $.ajax({
+                url: ojReportsData.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'oj_reports_export',
+                    nonce: ojReportsData.nonce,
+                    export_type: exportType,
+                    report_type: 'drill_down',
+                    drill_down_date: date,
+                    drill_down_label: label,
+                    date_preset: '<?php echo esc_js($reports_params['date_preset']); ?>',
+                    date_from: '<?php echo esc_js($reports_params['date_from']); ?>',
+                    date_to: '<?php echo esc_js($reports_params['date_to']); ?>',
+                    product_type: '<?php echo esc_js($reports_params['product_type']); ?>',
+                    order_source: '<?php echo esc_js($reports_params['order_source']); ?>',
+                    group_by: '<?php echo esc_js($reports_params['group_by']); ?>'
+                },
+                success: function(response) {
+                    if (response.success && response.data && response.data.url) {
+                        window.open(response.data.url, '_blank');
+                        alert('<?php _e('Export completed successfully!', 'orders-jet'); ?>');
+                    } else {
+                        var errorMsg = response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>';
+                        alert('<?php _e('Export failed', 'orders-jet'); ?>: ' + errorMsg);
                     }
                 },
                 error: function() {
                     alert('<?php _e('Export failed. Please try again.', 'orders-jet'); ?>');
                 },
                 complete: function() {
-                    $btn.prop('disabled', false).text(originalText);
+                    $select.prop('disabled', false).val(''); // Reset dropdown
                 }
             });
         });
@@ -957,9 +1023,11 @@ $sales_summary = array(
             modalHtml += '</div>';
             
             // Footer
+            var orderUrl = orderData.order_url || '<?php echo admin_url('post.php?post='); ?>' + orderData.id + '&action=edit';
             modalHtml += '<div style="padding: 20px; border-top: 2px solid #f0f0f0; display: flex; gap: 10px; justify-content: flex-end; position: sticky; bottom: 0; background: white;">';
-            modalHtml += '<a href="' + orderData.order_url + '" class="button" target="_blank"><?php _e('View in WooCommerce', 'orders-jet'); ?></a>';
-            modalHtml += '<button class="button button-primary oj-export-order-pdf-modal" data-order-id="' + orderData.id + '" data-order-number="' + orderData.order_number + '">📄 <?php _e('Export PDF', 'orders-jet'); ?></button>';
+            modalHtml += '<a href="' + orderUrl + '" class="button" target="_blank"><?php _e('View in WooCommerce', 'orders-jet'); ?></a>';
+            var orderIdForPdf = orderData.id || orderData.order_id;
+            modalHtml += '<button class="button button-primary oj-export-order-pdf-modal" data-order-id="' + orderIdForPdf + '" data-order-number="' + orderData.order_number + '">📄 <?php _e('Export PDF', 'orders-jet'); ?></button>';
             modalHtml += '</div>';
             
             modalHtml += '</div></div>';
