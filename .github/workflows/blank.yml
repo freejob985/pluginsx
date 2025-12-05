@@ -13,20 +13,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       
       - name: Deploy to Server via SFTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
           server: 35.159.190.103
           username: dashm18664
           password: ${{ secrets.SFTP_PASSWORD }}
-          protocol: ftps
           port: 22
-          server-dir: /home/dashm18664/sites/dashm.mytesting.store/htdocs/wp-content/plugins/
-          local-dir: ./
-          dangerous-clean-slate: false
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/node_modules/**
-            .github/**
+          local_path: ./
+          remote_path: /home/dashm18664/sites/dashm.mytesting.store/htdocs/wp-content/plugins/
+          sftp_only: true
+          delete_remote_files: false
+          args: '-o ConnectTimeout=5'
