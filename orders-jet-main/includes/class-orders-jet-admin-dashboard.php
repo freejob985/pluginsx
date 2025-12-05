@@ -56,6 +56,7 @@ class Orders_Jet_Admin_Dashboard {
         add_action('wp_ajax_oj_reports_get_data', array($this, 'ajax_reports_get_data'));
         add_action('wp_ajax_oj_reports_drill_down', array($this, 'ajax_reports_drill_down'));
         add_action('wp_ajax_oj_reports_export', array($this, 'ajax_reports_export'));
+        add_action('wp_ajax_oj_export_order_pdf', array($this, 'ajax_export_order_pdf'));
     }
     
     /**
@@ -3726,6 +3727,44 @@ class Orders_Jet_Admin_Dashboard {
         // Perform export
         try {
             $result = $exporter->export($export_type, $report_type);
+            
+            if ($result['success']) {
+                wp_send_json_success($result);
+            } else {
+                wp_send_json_error($result);
+            }
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage(),
+            ));
+        }
+    }
+    
+    /**
+     * AJAX: Export single order as PDF invoice
+     */
+    public function ajax_export_order_pdf() {
+        check_ajax_referer('oj_reports_nonce', 'nonce');
+        
+        $order_id = isset($_POST['order_id']) ? intval($_POST['order_id']) : 0;
+        
+        if (!$order_id) {
+            wp_send_json_error(array('message' => __('Invalid order ID', 'orders-jet')));
+            return;
+        }
+        
+        $order = wc_get_order($order_id);
+        if (!$order) {
+            wp_send_json_error(array('message' => __('Order not found', 'orders-jet')));
+            return;
+        }
+        
+        try {
+            // Load export class
+            require_once ORDERS_JET_PLUGIN_DIR . 'includes/classes/class-orders-reports-export.php';
+            
+            // Generate PDF invoice
+            $result = Orders_Reports_Export::export_single_order_pdf($order);
             
             if ($result['success']) {
                 wp_send_json_success($result);

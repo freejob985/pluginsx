@@ -589,7 +589,10 @@ $sales_summary = array(
             console.log('Expected total orders from summary:', expectedTotal);
             
             // Fix undefined issue - ensure label has a value
-            var displayLabel = label && label !== 'undefined' && label.trim() !== '' ? label : (date || '<?php _e('Unknown Period', 'orders-jet'); ?>');
+            var displayLabel = label && label !== 'undefined' && label !== undefined && label.trim() !== '' ? label : (date || '<?php _e('Unknown Period', 'orders-jet'); ?>');
+            if (!displayLabel || displayLabel === 'undefined' || displayLabel.trim() === '') {
+                displayLabel = date || '<?php _e('Period', 'orders-jet'); ?>';
+            }
             $('#oj-drill-down-title').html('<?php _e('Details for', 'orders-jet'); ?> <strong>' + displayLabel + '</strong>...');
             $('#oj-drill-down-section').slideDown();
             $('#oj-drill-down-kpis').html('<p><?php _e('Loading...', 'orders-jet'); ?></p>');
@@ -641,7 +644,10 @@ $sales_summary = array(
                         }
                         
                         // Update title with proper label and accurate count
-                        var finalLabel = label && label !== 'undefined' && label.trim() !== '' ? label : (date || '<?php _e('Period', 'orders-jet'); ?>');
+                        var finalLabel = label && label !== 'undefined' && label !== undefined && label.trim() !== '' ? label : (date || '<?php _e('Period', 'orders-jet'); ?>');
+                        if (!finalLabel || finalLabel === 'undefined' || finalLabel.trim() === '') {
+                            finalLabel = date || '<?php _e('Period', 'orders-jet'); ?>';
+                        }
                         $('#oj-drill-down-title').html('<?php _e('Details for', 'orders-jet'); ?> <strong>' + finalLabel + '</strong> <span style="color: #666; font-weight: normal; font-size: 14px;">(' + actualTotal + ' <?php _e('orders', 'orders-jet'); ?>)</span>');
                         
                         // Build KPIs HTML - only show first 4 KPIs for drill-down
@@ -684,7 +690,11 @@ $sales_summary = array(
                                 ordersHtml += '<td style="padding: 12px 15px; text-align: right;"><strong>' + order.total_formatted + '</strong></td>';
                                 ordersHtml += '<td style="padding: 12px 15px;">' + order.payment_method + '</td>';
                                 ordersHtml += '<td style="padding: 12px 15px;">' + order.date_created + '</td>';
-                                ordersHtml += '<td style="padding: 12px 15px; text-align: center;"><a href="' + order.order_url + '" class="button button-small" target="_blank"><?php _e('View', 'orders-jet'); ?></a></td>';
+                                ordersHtml += '<td style="padding: 12px 15px; text-align: center;">';
+                                ordersHtml += '<a href="' + order.order_url + '" class="button button-small" target="_blank" style="margin-right: 5px;"><?php _e('View', 'orders-jet'); ?></a>';
+                                ordersHtml += '<button class="button button-small oj-view-order-details" data-order-id="' + order.id + '" style="margin-right: 5px;"><?php _e('Details', 'orders-jet'); ?></button>';
+                                ordersHtml += '<button class="button button-small oj-export-order-pdf" data-order-id="' + order.id + '" data-order-number="' + order.order_number + '">📄 PDF</button>';
+                                ordersHtml += '</td>';
                                 ordersHtml += '</tr>';
                             });
                             
@@ -782,6 +792,221 @@ $sales_summary = array(
             $('#oj-drill-down-section').slideUp();
         });
 
+        // Order details button handler
+        $(document).on('click', '.oj-view-order-details', function() {
+            var orderId = $(this).data('order-id');
+            if (!orderId) {
+                alert('<?php _e('Invalid order ID', 'orders-jet'); ?>');
+                return;
+            }
+            
+            // Show loading modal
+            var loadingHtml = '<div class="oj-order-details-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 999999; display: flex; align-items: center; justify-content: center;">';
+            loadingHtml += '<div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">';
+            loadingHtml += '<div style="font-size: 24px; margin-bottom: 15px;">⏳</div>';
+            loadingHtml += '<div><?php _e('Loading order details...', 'orders-jet'); ?></div>';
+            loadingHtml += '</div></div>';
+            $('body').append(loadingHtml);
+            
+            // Fetch order details
+            $.ajax({
+                url: ojReportsData.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'oj_get_order_details',
+                    order_id: orderId,
+                    nonce: OrdersJetMaster.nonce
+                },
+                success: function(response) {
+                    $('.oj-order-details-overlay').remove();
+                    
+                    if (response.success && response.data) {
+                        displayOrderDetailsModal(response.data);
+                    } else {
+                        alert('<?php _e('Failed to load order details', 'orders-jet'); ?>: ' + (response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>'));
+                    }
+                },
+                error: function() {
+                    $('.oj-order-details-overlay').remove();
+                    alert('<?php _e('Connection error. Please try again.', 'orders-jet'); ?>');
+                }
+            });
+        });
+        
+        // Single order PDF export handler
+        $(document).on('click', '.oj-export-order-pdf', function() {
+            var $btn = $(this);
+            var orderId = $btn.data('order-id');
+            var orderNumber = $btn.data('order-number');
+            var originalText = $btn.text();
+            
+            if (!orderId) {
+                alert('<?php _e('Invalid order ID', 'orders-jet'); ?>');
+                return;
+            }
+            
+            $btn.prop('disabled', true).text('<?php _e('Generating...', 'orders-jet'); ?>');
+            
+            $.ajax({
+                url: ojReportsData.ajaxUrl,
+                type: 'POST',
+                data: {
+                    action: 'oj_export_order_pdf',
+                    order_id: orderId,
+                    nonce: ojReportsData.nonce
+                },
+                success: function(response) {
+                    if (response.success) {
+                        window.open(response.data.url, '_blank');
+                        alert('<?php _e('PDF invoice generated successfully!', 'orders-jet'); ?>');
+                    } else {
+                        alert('<?php _e('PDF export failed', 'orders-jet'); ?>: ' + (response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>'));
+                    }
+                },
+                error: function() {
+                    alert('<?php _e('Export failed. Please try again.', 'orders-jet'); ?>');
+                },
+                complete: function() {
+                    $btn.prop('disabled', false).text(originalText);
+                }
+            });
+        });
+        
+        // Function to display order details modal
+        function displayOrderDetailsModal(orderData) {
+            var modalHtml = '<div class="oj-order-details-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 999999; display: flex; align-items: center; justify-content: center; overflow-y: auto; padding: 20px;">';
+            modalHtml += '<div class="oj-order-details-modal" style="background: white; border-radius: 12px; max-width: 800px; width: 100%; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3);">';
+            
+            // Header
+            modalHtml += '<div style="padding: 20px; border-bottom: 2px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 10;">';
+            modalHtml += '<h2 style="margin: 0; font-size: 20px; font-weight: 600;"><?php _e('Order Details', 'orders-jet'); ?> #' + orderData.order_number + '</h2>';
+            modalHtml += '<button class="oj-close-order-details" style="background: none; border: none; font-size: 28px; cursor: pointer; color: #666; padding: 0; width: 32px; height: 32px; line-height: 32px;">&times;</button>';
+            modalHtml += '</div>';
+            
+            // Body
+            modalHtml += '<div style="padding: 20px;">';
+            
+            // Order info badges
+            modalHtml += '<div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">';
+            modalHtml += '<span style="padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; background: #e3f2fd; color: #1976d2;">' + orderData.status_icon + ' ' + orderData.status_text + '</span>';
+            modalHtml += '<span style="padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; background: #f3e5f5; color: #7b1fa2;">' + orderData.type_icon + ' ' + orderData.type_text + '</span>';
+            modalHtml += '<span style="padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 500; background: #fff3e0; color: #e65100;">' + orderData.kitchen_icon + ' ' + orderData.kitchen_text + '</span>';
+            modalHtml += '</div>';
+            
+            // Customer info
+            modalHtml += '<div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 20px;">';
+            modalHtml += '<h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #374151;"><?php _e('Customer Information', 'orders-jet'); ?></h3>';
+            modalHtml += '<div style="font-size: 14px; color: #6b7280;"><strong><?php _e('Name:', 'orders-jet'); ?></strong> ' + orderData.customer_name + '</div>';
+            if (orderData.customer_phone) {
+                modalHtml += '<div style="font-size: 14px; color: #6b7280; margin-top: 5px;"><strong><?php _e('Phone:', 'orders-jet'); ?></strong> ' + orderData.customer_phone + '</div>';
+            }
+            if (orderData.delivery_address) {
+                modalHtml += '<div style="font-size: 14px; color: #6b7280; margin-top: 5px;"><strong><?php _e('Address:', 'orders-jet'); ?></strong> ' + orderData.delivery_address + '</div>';
+            }
+            if (orderData.table_number) {
+                modalHtml += '<div style="font-size: 14px; color: #6b7280; margin-top: 5px;"><strong><?php _e('Table:', 'orders-jet'); ?></strong> ' + orderData.table_number + '</div>';
+            }
+            modalHtml += '</div>';
+            
+            // Order items
+            modalHtml += '<h3 style="margin: 0 0 15px 0; font-size: 16px; font-weight: 600;"><?php _e('Order Items', 'orders-jet'); ?></h3>';
+            modalHtml += '<div style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">';
+            
+            if (orderData.items && orderData.items.length > 0) {
+                $.each(orderData.items, function(i, item) {
+                    modalHtml += '<div style="padding: 15px; border-bottom: 1px solid #e5e7eb;' + (i === orderData.items.length - 1 ? ' border-bottom: none;' : '') + '">';
+                    modalHtml += '<div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">';
+                    modalHtml += '<div style="flex: 1;">';
+                    modalHtml += '<div style="font-weight: 600; font-size: 15px; margin-bottom: 5px;">' + item.name + ' <span style="color: #6b7280; font-weight: normal;">x' + item.quantity + '</span></div>';
+                    if (item.variation) {
+                        modalHtml += '<div style="font-size: 13px; color: #6b7280; margin-bottom: 5px;">' + item.variation + '</div>';
+                    }
+                    if (item.addons && item.addons.length > 0) {
+                        modalHtml += '<div style="margin-top: 8px;">';
+                        $.each(item.addons, function(j, addon) {
+                            modalHtml += '<div style="font-size: 12px; color: #6b7280; margin-left: 15px; margin-top: 3px;">+ ' + addon.name;
+                            if (addon.has_price) {
+                                modalHtml += ' (' + addon.unit_price + ')';
+                            }
+                            modalHtml += '</div>';
+                        });
+                        modalHtml += '</div>';
+                    }
+                    if (item.notes) {
+                        modalHtml += '<div style="font-size: 12px; color: #dc2626; margin-top: 5px; font-style: italic;"><?php _e('Note:', 'orders-jet'); ?> ' + item.notes + '</div>';
+                    }
+                    modalHtml += '</div>';
+                    modalHtml += '<div style="text-align: right; margin-left: 15px;">';
+                    modalHtml += '<div style="font-weight: 600; font-size: 15px;">' + item.total + '</div>';
+                    modalHtml += '</div>';
+                    modalHtml += '</div>';
+                    modalHtml += '</div>';
+                });
+            } else {
+                modalHtml += '<div style="padding: 30px; text-align: center; color: #6b7280;"><?php _e('No items found', 'orders-jet'); ?></div>';
+            }
+            
+            modalHtml += '</div>';
+            
+            // Order summary
+            modalHtml += '<div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #e5e7eb;">';
+            modalHtml += '<div style="display: flex; justify-content: space-between; align-items: center;">';
+            modalHtml += '<div style="font-size: 16px; font-weight: 600;"><?php _e('Total:', 'orders-jet'); ?></div>';
+            modalHtml += '<div style="font-size: 20px; font-weight: 700; color: #2271b1;">' + orderData.total_formatted + '</div>';
+            modalHtml += '</div>';
+            modalHtml += '</div>';
+            
+            // Footer
+            modalHtml += '<div style="padding: 20px; border-top: 2px solid #f0f0f0; display: flex; gap: 10px; justify-content: flex-end; position: sticky; bottom: 0; background: white;">';
+            modalHtml += '<a href="' + orderData.order_url + '" class="button" target="_blank"><?php _e('View in WooCommerce', 'orders-jet'); ?></a>';
+            modalHtml += '<button class="button button-primary oj-export-order-pdf-modal" data-order-id="' + orderData.id + '" data-order-number="' + orderData.order_number + '">📄 <?php _e('Export PDF', 'orders-jet'); ?></button>';
+            modalHtml += '</div>';
+            
+            modalHtml += '</div></div>';
+            
+            $('body').append(modalHtml);
+            
+            // Close button handler
+            $('.oj-close-order-details, .oj-order-details-overlay').on('click', function(e) {
+                if (e.target === this) {
+                    $('.oj-order-details-overlay').remove();
+                }
+            });
+            
+            // PDF export from modal
+            $('.oj-export-order-pdf-modal').on('click', function() {
+                var orderId = $(this).data('order-id');
+                var $btn = $(this);
+                var originalText = $btn.text();
+                
+                $btn.prop('disabled', true).text('<?php _e('Generating...', 'orders-jet'); ?>');
+                
+                $.ajax({
+                    url: ojReportsData.ajaxUrl,
+                    type: 'POST',
+                    data: {
+                        action: 'oj_export_order_pdf',
+                        order_id: orderId,
+                        nonce: ojReportsData.nonce
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            window.open(response.data.url, '_blank');
+                            alert('<?php _e('PDF invoice generated successfully!', 'orders-jet'); ?>');
+                        } else {
+                            alert('<?php _e('PDF export failed', 'orders-jet'); ?>: ' + (response.data && response.data.message ? response.data.message : '<?php _e('Unknown error', 'orders-jet'); ?>'));
+                        }
+                    },
+                    error: function() {
+                        alert('<?php _e('Export failed. Please try again.', 'orders-jet'); ?>');
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).text(originalText);
+                    }
+                });
+            });
+        }
+        
         // Export button handler
         $('.oj-export-btn').on('click', function() {
             var $btn = $(this);
@@ -828,21 +1053,5 @@ $sales_summary = array(
     </script>
     
     <!-- Note: Debug panel removed for reports (cleaner interface) -->
-    
-    <!-- Reports-specific Toolbar -->
-    <?php include ORDERS_JET_PLUGIN_DIR . 'templates/admin/partials/reports/reports-toolbar.php'; ?>
-    
-    <!-- Reports-specific Content Area -->
-    <div id="oj-dynamic-content">
-        <?php 
-        // Prepare variables for the content area partial
-        $current_page = max(1, intval($_GET['paged'] ?? 1));
-        
-        // Include the reports-specific content area partial
-        include ORDERS_JET_PLUGIN_DIR . 'templates/admin/partials/reports/reports-content-area.php'; 
-        ?>
-    </div>
+    <!-- Note: Second filters (oj-master-toolbar and oj-orders-grid) removed as requested -->
 </div>
-
-<!-- Reports-specific Filters Slide Panel -->
-<?php include ORDERS_JET_PLUGIN_DIR . 'templates/admin/partials/reports/reports-filters-panel.php'; ?>

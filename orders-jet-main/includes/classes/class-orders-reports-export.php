@@ -520,4 +520,362 @@ class Orders_Reports_Export {
         $upload_dir = wp_upload_dir();
         return $upload_dir['baseurl'] . '/orders-jet-exports/' . $filename;
     }
+    
+    /**
+     * Export single order as PDF invoice
+     * 
+     * @param WC_Order $order Order object
+     * @return array Result with success status and file info
+     */
+    public static function export_single_order_pdf($order) {
+        if (!$order || !is_a($order, 'WC_Order')) {
+            return array(
+                'success' => false,
+                'message' => __('Invalid order', 'orders-jet'),
+            );
+        }
+        
+        // Generate HTML content for invoice
+        $html = self::generate_order_invoice_html($order);
+        
+        // Check if TCPDF is available
+        if (class_exists('TCPDF')) {
+            return self::export_order_to_tcpdf($order, $html);
+        }
+        
+        // Fallback: Generate HTML file
+        return self::export_order_to_html($order, $html);
+    }
+    
+    /**
+     * Generate HTML content for order invoice
+     * 
+     * @param WC_Order $order Order object
+     * @return string HTML content
+     */
+    private static function generate_order_invoice_html($order) {
+        $order_number = $order->get_order_number();
+        $order_date = $order->get_date_created()->date_i18n(get_option('date_format') . ' ' . get_option('time_format'));
+        $customer_name = trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name());
+        if (empty($customer_name)) {
+            $customer_name = $order->get_billing_email() ?: __('Guest', 'orders-jet');
+        }
+        $customer_phone = $order->get_billing_phone();
+        $customer_email = $order->get_billing_email();
+        $billing_address = $order->get_formatted_billing_address();
+        $shipping_address = $order->get_formatted_shipping_address();
+        $payment_method = $order->get_payment_method_title();
+        $order_status = wc_get_order_status_name($order->get_status());
+        
+        // Get order items
+        $items_html = '';
+        foreach ($order->get_items() as $item) {
+            $product = $item->get_product();
+            $item_name = $item->get_name();
+            $quantity = $item->get_quantity();
+            $line_total = $item->get_total();
+            $line_subtotal = $item->get_subtotal();
+            
+            $items_html .= '<tr>';
+            $items_html .= '<td style="padding: 10px; border-bottom: 1px solid #ddd;">' . esc_html($item_name) . '</td>';
+            $items_html .= '<td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">' . $quantity . '</td>';
+            $items_html .= '<td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">' . wc_price($line_subtotal / $quantity) . '</td>';
+            $items_html .= '<td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">' . wc_price($line_total) . '</td>';
+            $items_html .= '</tr>';
+        }
+        
+        // Calculate totals
+        $subtotal = $order->get_subtotal();
+        $discount = $order->get_total_discount();
+        $shipping = $order->get_shipping_total();
+        $tax = $order->get_total_tax();
+        $total = $order->get_total();
+        
+        $html = '
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <title>' . sprintf(__('Invoice #%s', 'orders-jet'), $order_number) . '</title>
+            <style>
+                body { 
+                    font-family: Arial, sans-serif; 
+                    margin: 0; 
+                    padding: 20px; 
+                    color: #333;
+                }
+                .invoice-header {
+                    border-bottom: 3px solid #2271b1;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                }
+                .invoice-title {
+                    font-size: 28px;
+                    font-weight: bold;
+                    color: #2271b1;
+                    margin-bottom: 10px;
+                }
+                .invoice-info {
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 20px;
+                }
+                .invoice-info-left, .invoice-info-right {
+                    width: 48%;
+                }
+                .invoice-section {
+                    margin-bottom: 25px;
+                }
+                .invoice-section-title {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #2271b1;
+                    margin-bottom: 10px;
+                    padding-bottom: 5px;
+                    border-bottom: 2px solid #e5e7eb;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                }
+                th {
+                    background-color: #2271b1;
+                    color: white;
+                    padding: 12px;
+                    text-align: left;
+                    font-weight: 600;
+                }
+                th.text-right {
+                    text-align: right;
+                }
+                th.text-center {
+                    text-align: center;
+                }
+                td {
+                    padding: 10px;
+                }
+                .totals-table {
+                    margin-top: 20px;
+                    width: 100%;
+                }
+                .totals-table td {
+                    padding: 8px 10px;
+                    border-bottom: 1px solid #e5e7eb;
+                }
+                .totals-table td:first-child {
+                    text-align: right;
+                    font-weight: 600;
+                }
+                .totals-table td:last-child {
+                    text-align: right;
+                    font-weight: 600;
+                }
+                .total-row {
+                    font-size: 18px;
+                    font-weight: bold;
+                    color: #2271b1;
+                    border-top: 2px solid #2271b1;
+                }
+                .invoice-footer {
+                    margin-top: 40px;
+                    padding-top: 20px;
+                    border-top: 2px solid #e5e7eb;
+                    text-align: center;
+                    color: #6b7280;
+                    font-size: 12px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="invoice-header">
+                <div class="invoice-title">' . __('Invoice', 'orders-jet') . '</div>
+                <div class="invoice-info">
+                    <div class="invoice-info-left">
+                        <div><strong>' . __('Order Number:', 'orders-jet') . '</strong> #' . esc_html($order_number) . '</div>
+                        <div><strong>' . __('Order Date:', 'orders-jet') . '</strong> ' . esc_html($order_date) . '</div>
+                        <div><strong>' . __('Status:', 'orders-jet') . '</strong> ' . esc_html($order_status) . '</div>
+                    </div>
+                    <div class="invoice-info-right">
+                        <div><strong>' . __('Payment Method:', 'orders-jet') . '</strong> ' . esc_html($payment_method) . '</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="invoice-section">
+                <div class="invoice-section-title">' . __('Customer Information', 'orders-jet') . '</div>
+                <div><strong>' . __('Name:', 'orders-jet') . '</strong> ' . esc_html($customer_name) . '</div>';
+        
+        if ($customer_phone) {
+            $html .= '<div><strong>' . __('Phone:', 'orders-jet') . '</strong> ' . esc_html($customer_phone) . '</div>';
+        }
+        if ($customer_email) {
+            $html .= '<div><strong>' . __('Email:', 'orders-jet') . '</strong> ' . esc_html($customer_email) . '</div>';
+        }
+        if ($billing_address) {
+            $html .= '<div style="margin-top: 10px;"><strong>' . __('Billing Address:', 'orders-jet') . '</strong><br>' . wp_kses_post($billing_address) . '</div>';
+        }
+        if ($shipping_address && $shipping_address !== $billing_address) {
+            $html .= '<div style="margin-top: 10px;"><strong>' . __('Shipping Address:', 'orders-jet') . '</strong><br>' . wp_kses_post($shipping_address) . '</div>';
+        }
+        
+        $html .= '
+            </div>
+            
+            <div class="invoice-section">
+                <div class="invoice-section-title">' . __('Order Items', 'orders-jet') . '</div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>' . __('Item', 'orders-jet') . '</th>
+                            <th class="text-center">' . __('Quantity', 'orders-jet') . '</th>
+                            <th class="text-right">' . __('Unit Price', 'orders-jet') . '</th>
+                            <th class="text-right">' . __('Total', 'orders-jet') . '</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ' . $items_html . '
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="invoice-section">
+                <table class="totals-table">
+                    <tr>
+                        <td>' . __('Subtotal:', 'orders-jet') . '</td>
+                        <td>' . wc_price($subtotal) . '</td>
+                    </tr>';
+        
+        if ($discount > 0) {
+            $html .= '<tr>
+                        <td>' . __('Discount:', 'orders-jet') . '</td>
+                        <td>- ' . wc_price($discount) . '</td>
+                    </tr>';
+        }
+        if ($shipping > 0) {
+            $html .= '<tr>
+                        <td>' . __('Shipping:', 'orders-jet') . '</td>
+                        <td>' . wc_price($shipping) . '</td>
+                    </tr>';
+        }
+        if ($tax > 0) {
+            $html .= '<tr>
+                        <td>' . __('Tax:', 'orders-jet') . '</td>
+                        <td>' . wc_price($tax) . '</td>
+                    </tr>';
+        }
+        
+        $html .= '<tr class="total-row">
+                        <td>' . __('Total:', 'orders-jet') . '</td>
+                        <td>' . wc_price($total) . '</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="invoice-footer">
+                <div>' . sprintf(__('Generated on %s', 'orders-jet'), current_time(get_option('date_format') . ' ' . get_option('time_format'))) . '</div>
+                <div>' . get_bloginfo('name') . '</div>
+            </div>
+        </body>
+        </html>';
+        
+        return $html;
+    }
+    
+    /**
+     * Export order to PDF using TCPDF
+     * 
+     * @param WC_Order $order Order object
+     * @param string $html HTML content
+     * @return array Result
+     */
+    private static function export_order_to_tcpdf($order, $html) {
+        try {
+            $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+            
+            // Set document information
+            $pdf->SetCreator('Orders Jet');
+            $pdf->SetAuthor(get_bloginfo('name'));
+            $pdf->SetTitle(sprintf(__('Invoice #%s', 'orders-jet'), $order->get_order_number()));
+            
+            // Remove header/footer
+            $pdf->setPrintHeader(false);
+            $pdf->setPrintFooter(false);
+            
+            // Add page
+            $pdf->AddPage();
+            
+            // Write HTML
+            $pdf->writeHTML($html, true, false, true, false, '');
+            
+            // Generate filename and save
+            $filename = sprintf('invoice-order-%s-%s.pdf', $order->get_order_number(), current_time('Y-m-d_H-i-s'));
+            $filepath = self::get_temp_filepath_static($filename);
+            
+            $pdf->Output($filepath, 'F');
+            
+            return array(
+                'success' => true,
+                'filename' => $filename,
+                'url' => self::get_download_url_static($filename),
+                'message' => __('PDF invoice generated successfully', 'orders-jet'),
+            );
+            
+        } catch (Exception $e) {
+            return array(
+                'success' => false,
+                'message' => sprintf(__('PDF export failed: %s', 'orders-jet'), $e->getMessage()),
+            );
+        }
+    }
+    
+    /**
+     * Export order to HTML (fallback for PDF)
+     * 
+     * @param WC_Order $order Order object
+     * @param string $html HTML content
+     * @return array Result
+     */
+    private static function export_order_to_html($order, $html) {
+        $filename = sprintf('invoice-order-%s-%s.html', $order->get_order_number(), current_time('Y-m-d_H-i-s'));
+        $filepath = self::get_temp_filepath_static($filename);
+        
+        file_put_contents($filepath, $html);
+        
+        return array(
+            'success' => true,
+            'filename' => $filename,
+            'url' => self::get_download_url_static($filename),
+            'message' => __('HTML invoice generated successfully (PDF library not available)', 'orders-jet'),
+        );
+    }
+    
+    /**
+     * Get temporary file path (static version)
+     * 
+     * @param string $filename Filename
+     * @return string Full file path
+     */
+    private static function get_temp_filepath_static($filename) {
+        $upload_dir = wp_upload_dir();
+        $exports_dir = $upload_dir['basedir'] . '/orders-jet-exports';
+        
+        // Create directory if it doesn't exist
+        if (!file_exists($exports_dir)) {
+            wp_mkdir_p($exports_dir);
+        }
+        
+        return $exports_dir . '/' . $filename;
+    }
+    
+    /**
+     * Get download URL for exported file (static version)
+     * 
+     * @param string $filename Filename
+     * @return string Download URL
+     */
+    private static function get_download_url_static($filename) {
+        $upload_dir = wp_upload_dir();
+        return $upload_dir['baseurl'] . '/orders-jet-exports/' . $filename;
+    }
 }
