@@ -1,0 +1,558 @@
+/**
+ * Orders Reports CSS
+ * 
+ * Comprehensive styling for the Orders Reports dashboard
+ * 
+ * @package Orders_Jet
+ * @version 1.0.0
+ */
+
+/* =====================================================
+   REPORTS DASHBOARD LAYOUT
+   ===================================================== */
+
+.oj-reports-dashboard {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.oj-reports-header {
+    background: linear-gradient(135deg, #2271b1 0%, #135e96 100%);
+    color: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.oj-reports-title {
+    font-size: 32px;
+    font-weight: 600;
+    margin: 0 0 10px 0;
+    color: white;
+}
+
+.oj-reports-subtitle {
+    font-size: 16px;
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* =====================================================
+   FILTER BAR
+   ===================================================== */
+
+.oj-reports-filters {
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.oj-filter-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.oj-filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.oj-filter-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+}
+
+.oj-filter-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    min-width: 150px;
+    transition: border-color 0.2s;
+}
+
+.oj-filter-input:focus {
+    border-color: #2271b1;
+    outline: none;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* =====================================================
+   KPI SECTION
+   ===================================================== */
+
+.oj-kpi-section {
+    margin-bottom: 30px;
+}
+
+.oj-section-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 20px 0;
+}
+
+.oj-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.oj-kpi-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #2271b1;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.oj-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.oj-kpi-icon {
+    font-size: 36px;
+    line-height: 1;
+}
+
+.oj-kpi-content {
+    flex: 1;
+}
+
+.oj-kpi-label {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 5px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.oj-kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    line-height: 1.2;
+}
+
+/* =====================================================
+   DRILL-DOWN SECTION
+   ===================================================== */
+
+.oj-drill-down-section {
+    background: #f8fafc;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 2px solid #2271b1;
+}
+
+.oj-drill-down-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.oj-drill-down-header h3 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* =====================================================
+   TABS
+   ===================================================== */
+
+.oj-reports-tabs {
+    display: flex;
+    gap: 5px;
+    background: white;
+    padding: 10px;
+    border-radius: 8px 8px 0 0;
+    border-bottom: 2px solid #e2e8f0;
+    margin-top: 30px;
+}
+
+.oj-tab-btn {
+    padding: 12px 20px;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.oj-tab-btn:hover {
+    background: #f1f5f9;
+    color: #2271b1;
+}
+
+.oj-tab-btn.active {
+    background: #2271b1;
+    color: white;
+}
+
+.oj-tab-content {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.oj-tab-content.active {
+    display: block;
+}
+
+/* =====================================================
+   TABLES
+   ===================================================== */
+
+.oj-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.oj-table-header h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0;
+}
+
+.oj-export-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.oj-export-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+}
+
+.oj-report-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.oj-report-table thead {
+    background: #f8fafc;
+}
+
+.oj-report-table th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.oj-report-table td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #334155;
+}
+
+.oj-report-table tbody tr {
+    transition: background-color 0.2s;
+}
+
+.oj-report-table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.oj-clickable-row {
+    cursor: pointer;
+}
+
+.oj-clickable-row:hover {
+    background-color: #f1f5f9 !important;
+}
+
+.oj-no-data {
+    text-align: center;
+    color: #94a3b8;
+    font-style: italic;
+    padding: 40px !important;
+}
+
+.oj-status-completed {
+    color: #10b981;
+    font-weight: 600;
+}
+
+.oj-status-cancelled {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+.oj-status-badge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.oj-status-completed,
+.oj-status-badge.oj-status-completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.oj-status-cancelled,
+.oj-status-badge.oj-status-cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* =====================================================
+   PAYMENT & STATUS BREAKDOWNS
+   ===================================================== */
+
+.oj-payment-breakdown,
+.oj-status-breakdown {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.oj-payment-card,
+.oj-status-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.oj-payment-card h3,
+.oj-status-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin: 0 0 15px 0;
+}
+
+.oj-payment-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.oj-stat {
+    text-align: center;
+}
+
+.oj-stat-label {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+
+.oj-stat-value {
+    display: block;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.oj-status-value {
+    font-size: 36px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.oj-status-percentage {
+    font-size: 14px;
+    color: #64748b;
+    margin-bottom: 10px;
+}
+
+.oj-progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.oj-progress-fill {
+    height: 100%;
+    background: #2271b1;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+}
+
+/* =====================================================
+   LOADING OVERLAY
+   ===================================================== */
+
+.oj-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+
+.oj-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #2271b1;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.oj-loading-text {
+    color: white;
+    font-size: 16px;
+    margin-top: 20px;
+    font-weight: 500;
+}
+
+/* =====================================================
+   RESPONSIVE DESIGN
+   ===================================================== */
+
+@media screen and (max-width: 1024px) {
+    .oj-filter-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .oj-filter-group {
+        width: 100%;
+    }
+
+    .oj-filter-input {
+        width: 100%;
+    }
+
+    .oj-kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .oj-reports-header {
+        padding: 20px;
+    }
+
+    .oj-reports-title {
+        font-size: 24px;
+    }
+
+    .oj-reports-subtitle {
+        font-size: 14px;
+    }
+
+    .oj-kpi-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .oj-kpi-value {
+        font-size: 24px;
+    }
+
+    .oj-table-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .oj-export-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .oj-export-btn {
+        width: 100%;
+    }
+
+    .oj-report-table {
+        font-size: 12px;
+    }
+
+    .oj-report-table th,
+    .oj-report-table td {
+        padding: 8px;
+    }
+
+    .oj-payment-breakdown,
+    .oj-status-breakdown {
+        grid-template-columns: 1fr;
+    }
+
+    .oj-drill-down-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+}
+
+/* =====================================================
+   UTILITIES
+   ===================================================== */
+
+.oj-text-center {
+    text-align: center;
+}
+
+.oj-mt-20 {
+    margin-top: 20px;
+}
+
+.oj-mb-20 {
+    margin-bottom: 20px;
+}
+
+.oj-hidden {
+    display: none !important;
+}

@@ -1,0 +1,493 @@
+/**
+ * Orders Master V2 - Toolbar Styles
+ * 
+ * Single row toolbar for date range, search, status filters, and sort
+ * Mobile-first responsive design matching current Orders Jet design system
+ * 
+ * @package Orders_Jet
+ * @version 2.0.0
+ */
+
+/* ==========================================================================
+   MOBILE FIRST - BASE STYLES (320px+)
+   ========================================================================== */
+
+.oj-master-toolbar {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 15px;
+    margin: 20px 0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.oj-toolbar-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.oj-toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    flex-shrink: 0; /* Prevent groups from shrinking */
+}
+
+/* Form Controls */
+.oj-toolbar-select,
+.oj-toolbar-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    width: 100%;
+}
+
+.oj-toolbar-select:focus,
+.oj-toolbar-input:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
+}
+
+/* Custom Date Inputs */
+.oj-custom-dates {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+    width: 100%;
+}
+
+.oj-date-input {
+    flex: 1;
+    min-width: 120px;
+}
+
+.oj-date-separator {
+    color: #666;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Search Input */
+.oj-search-input {
+    flex: 0 1 250px; /* Fixed max width instead of flex: 1 */
+    min-width: 180px;
+    max-width: 250px;
+}
+
+.oj-search-input::placeholder {
+    color: #999;
+}
+
+/* Action Buttons */
+.oj-actions-group {
+    justify-content: flex-start;
+    gap: 6px; /* Reduced from 10px for more compact layout */
+}
+
+.oj-apply-btn,
+.oj-reset-btn {
+   /* padding: 8px 16px !important; */
+    font-size: 14px !important;
+    border-radius: 4px !important;
+    transition: all 0.2s !important;
+}
+
+.oj-apply-btn {
+    background: #2196f3 !important;
+    border-color: #2196f3 !important;
+    color: #fff !important;
+}
+
+.oj-apply-btn:hover {
+    background: #1976d2 !important;
+    border-color: #1976d2 !important;
+}
+
+.oj-reset-btn {
+    background: #f5f5f5 !important;
+    border-color: #ddd !important;
+    color: #666 !important;
+}
+
+.oj-reset-btn:hover {
+    background: #e0e0e0 !important;
+    color: #333 !important;
+}
+
+/* ==========================================================================
+   TABLET (768px+)
+   ========================================================================== */
+
+@media (min-width: 768px) {
+    .oj-toolbar-form {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px; /* Reduced from 15px to fit more in one line */
+    }
+    
+    .oj-toolbar-group {
+        width: auto;
+        flex: 0 0 auto;
+    }
+    
+    /* Date Group */
+    .oj-date-group {
+        min-width: 150px; /* Reduced from 180px */
+    }
+    
+    .oj-date-select {
+        min-width: 140px; /* Reduced from 160px */
+    }
+    
+    .oj-custom-dates {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 4px 4px;
+        padding: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 10;
+        margin-top: 0;
+    }
+    
+    .oj-date-group {
+        position: relative;
+    }
+    
+    /* Search Group - Flexible */
+    .oj-search-group {
+        flex: 0 1 280px; /* Reduced max width */
+        max-width: 280px;
+        min-width: 180px;
+    }
+    
+    /* Status Group */
+    .oj-status-group {
+        min-width: 150px; /* Reduced from 180px */
+    }
+    
+    .oj-status-select {
+        min-width: 140px; /* Reduced from 160px */
+    }
+    
+    /* Order Type Group */
+    .oj-order-type-group {
+        min-width: 120px; /* Reduced from 140px */
+    }
+    
+    .oj-order-type-select {
+        min-width: 110px; /* Reduced from 120px */
+    }
+    
+    /* Kitchen Type Group */
+    .oj-kitchen-type-group {
+        min-width: 130px; /* Reduced from 160px */
+    }
+    
+    .oj-kitchen-type-select {
+        min-width: 140px;
+    }
+    
+    /* Sort Group */
+    .oj-sort-group {
+        min-width: 160px;
+    }
+    
+    .oj-sort-select {
+        min-width: 140px;
+    }
+    
+    /* Actions Group */
+    .oj-actions-group {
+        margin-left: auto;
+    }
+}
+
+/* ==========================================================================
+   DESKTOP (1024px+)
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+    .oj-master-toolbar {
+        padding: 20px;
+    }
+    
+    .oj-toolbar-form {
+        gap: 10px; /* Reduced from 20px */
+        flex-wrap: nowrap; /* Prevent wrapping on desktop */
+    }
+    
+    /* Larger controls on desktop */
+    .oj-date-group {
+        min-width: 200px;
+    }
+    
+    .oj-search-group {
+        max-width: 320px; /* Reduced from 400px */
+        min-width: 200px;
+    }
+    
+    .oj-status-group {
+        min-width: 200px;
+    }
+    
+    .oj-sort-group {
+        min-width: 180px;
+    }
+}
+
+/* ==========================================================================
+   LARGE DESKTOP (1200px+)
+   ========================================================================== */
+
+@media (min-width: 1200px) {
+    .oj-toolbar-form {
+        flex-wrap: nowrap;
+    }
+    
+    .oj-search-group {
+        flex: 1;
+        max-width: none;
+    }
+}
+
+/* ==========================================================================
+   ACCESSIBILITY & INTERACTIONS
+   ========================================================================== */
+
+/* Focus states */
+.oj-toolbar-select:focus,
+.oj-toolbar-input:focus {
+    outline: 2px solid #2196f3;
+    outline-offset: 2px;
+}
+
+/* Loading state */
+.oj-toolbar-form.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+/* Hover effects */
+.oj-toolbar-select:hover,
+.oj-toolbar-input:hover {
+    border-color: #2196f3;
+}
+
+/* Disabled state */
+.oj-toolbar-select:disabled,
+.oj-toolbar-input:disabled {
+    background: #f5f5f5;
+    color: #999;
+    cursor: not-allowed;
+}
+
+/* ==========================================================================
+   RESPONSIVE BREAKPOINTS SUMMARY
+   ========================================================================== */
+
+/*
+Mobile (320px-767px):
+- Stacked layout (column)
+- Full width controls
+- Custom dates below dropdown
+
+Tablet (768px-1023px):
+- Horizontal layout (row, wrapped)
+- Fixed width controls
+- Custom dates as dropdown overlay
+
+Desktop (1024px-1199px):
+- Horizontal layout
+- Larger controls
+- Better spacing
+
+Large Desktop (1200px+):
+- Single row (no wrap)
+- Search field expands
+- Optimal spacing
+*/
+
+/* ORDERS META ROW - Count and Sort */
+.oj-orders-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #e1e5e9;
+    font-size: 14px;
+    color: #50575e;
+}
+
+.oj-orders-count {
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.oj-orders-sort {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.oj-sort-label {
+    font-weight: 500;
+    color: #1d2327;
+    margin: 0;
+}
+
+.oj-sort-link {
+    color: #646970;
+    text-decoration: none;
+    font-size: 13px;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+}
+
+.oj-sort-link:hover {
+    color: #2271b1;
+    background-color: #f0f6fc;
+}
+
+.oj-sort-link.active {
+    color: #2271b1;
+    font-weight: 600;
+}
+
+.oj-sort-separator {
+    color: #c3c4c7;
+    font-weight: normal;
+}
+
+/* Hide desktop/mobile specific elements by default */
+.oj-count-mobile {
+    display: none;
+}
+
+.oj-count-desktop {
+    display: inline;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    /* Show/hide desktop vs mobile count text */
+    .oj-count-desktop {
+        display: none !important;
+    }
+    
+    .oj-count-mobile {
+        display: inline !important;
+    }
+    
+    /* Hide "Total:" text and emoji on mobile - show only amount */
+    .oj-total-icon-desktop,
+    .oj-total-label-desktop {
+        display: none;
+    }
+    
+    .oj-orders-meta-row {
+        flex-direction: row; /* Keep in one line */
+        gap: 0;
+        align-items: center;
+        padding: 12px 16px;
+        justify-content: space-between;
+    }
+    
+    /* Orders count section on mobile - compact inline */
+    .oj-orders-count {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0;
+        padding: 0;
+        border: none;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .oj-orders-count .oj-total-amount {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1d2327;
+    }
+    
+    /* Sort section on mobile */
+    .oj-orders-sort {
+        display: flex;
+        flex-direction: row;
+        gap: 6px;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+    
+    /* Hide "Sort by:" label on mobile */
+    .oj-sort-label {
+        display: none;
+    }
+    
+    /* Sort links as smaller buttons on mobile */
+    .oj-sort-link {
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        background: white;
+        border: 1px solid #dcdcde;
+        border-radius: 4px;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+        white-space: nowrap;
+    }
+    
+    .oj-sort-link.active {
+        background: #f0f6fc;
+        border-color: #0073aa;
+        color: #0073aa;
+        font-weight: 600;
+    }
+    
+    .oj-sort-link:active {
+        transform: scale(0.98);
+    }
+    
+    /* Hide separators on mobile */
+    .oj-sort-separator {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .oj-orders-meta-row {
+        padding: 10px 12px;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+    
+    .oj-orders-count {
+        font-size: 13px;
+    }
+    
+    .oj-sort-link {
+        font-size: 11px;
+        padding: 5px 8px;
+    }
+}

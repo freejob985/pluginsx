@@ -1,0 +1,1013 @@
+/**
+ * Order Editor Module Styles
+ * 
+ * All modal and form styles for order editing operations
+ * 
+ * @package Orders_Jet
+ * @version 2.0
+ */
+
+/* ==========================================================================
+   MODAL SYSTEM
+   ========================================================================== */
+
+/* Modal Overlay */
+.oj-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.oj-modal-overlay.show {
+    opacity: 1;
+}
+
+/* Modal Container */
+.oj-modal-container {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.oj-modal-overlay.show .oj-modal-container {
+    transform: scale(1);
+}
+
+/* Modal Header */
+.oj-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.oj-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.oj-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    line-height: 1;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.oj-modal-close:hover {
+    background: #f8f9fa;
+    color: #2c3e50;
+}
+
+/* Modal Body */
+.oj-modal-body {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+/* Modal Footer */
+.oj-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 16px 24px;
+    border-top: 1px solid #dee2e6;
+    background: #f8f9fa;
+    border-radius: 0 0 8px 8px;
+}
+
+/* Modal Buttons */
+.oj-modal-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.oj-modal-btn-secondary {
+    background: white;
+    color: #495057;
+}
+
+.oj-modal-btn-secondary:hover {
+    background: #f8f9fa;
+    border-color: #adb5bd;
+}
+
+.oj-modal-btn-primary {
+    background: #0073aa;
+    color: white;
+    border-color: #0073aa;
+}
+
+.oj-modal-btn-primary:hover {
+    background: #005a87;
+    border-color: #005a87;
+}
+
+.oj-modal-btn-danger {
+    background: #d63638;
+    color: white;
+    border-color: #d63638;
+}
+
+.oj-modal-btn-danger:hover {
+    background: #a32426;
+    border-color: #a32426;
+}
+
+.oj-modal-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Prevent body scroll when modal open */
+body.oj-modal-open,
+body.oj-iframe-open {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   IFRAME MODAL (Table Ordering)
+   ========================================================================== */
+
+.oj-iframe-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.oj-iframe-overlay.show {
+    opacity: 1;
+}
+
+.oj-iframe-container {
+    width: 95%;
+    height: 95%;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+.oj-iframe-overlay.show .oj-iframe-container {
+    transform: scale(1);
+}
+
+.oj-iframe-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid #dee2e6;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.oj-iframe-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.oj-iframe-close {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: white;
+    color: #6c757d;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.oj-iframe-close:hover {
+    background: #e9ecef;
+    color: #2c3e50;
+}
+
+.oj-iframe-body {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+}
+
+.oj-table-ordering-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .oj-iframe-container {
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+    
+    .oj-iframe-header {
+        padding: 12px 16px;
+        border-radius: 0;
+    }
+    
+    .oj-iframe-title {
+        font-size: 16px;
+    }
+    
+    .oj-iframe-close {
+        width: 32px;
+        height: 32px;
+        font-size: 24px;
+    }
+}
+
+/* WooCommerce Link Button (inside Order Actions modal) */
+.oj-woo-link-btn {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    color: #495057;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.oj-woo-link-btn:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+    color: #2c3e50;
+}
+
+/* ==========================================================================
+   FORM ELEMENTS (Common styles for all modals)
+   ========================================================================== */
+
+.oj-form-group {
+    margin-bottom: 20px;
+}
+
+.oj-form-label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #2c3e50;
+}
+
+.oj-form-input,
+.oj-form-textarea,
+.oj-form-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    transition: border-color 0.2s ease;
+}
+
+.oj-form-input:focus,
+.oj-form-textarea:focus,
+.oj-form-select:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 3px rgba(0, 115, 170, 0.1);
+}
+
+.oj-form-textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.oj-form-help {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.oj-form-error {
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+    color: #d63638;
+    font-weight: 500;
+}
+
+/* Radio/Checkbox Groups */
+.oj-radio-group,
+.oj-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.oj-radio-option,
+.oj-checkbox-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.oj-radio-option input[type="radio"],
+.oj-checkbox-option input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    min-height: 18px;
+    margin-top: 2px;
+    margin-right: 0;
+    margin-left: 0;
+    flex-shrink: 0;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Fix WordPress :before positioning without hiding it */
+.oj-radio-option input[type="radio"]::before,
+.oj-checkbox-option input[type="checkbox"]::before {
+    margin: 0 !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+}
+
+.oj-radio-option label,
+.oj-checkbox-option label {
+    flex: 1;
+    cursor: pointer;
+    line-height: 1.5;
+}
+
+.oj-radio-option label,
+.oj-checkbox-option label {
+    cursor: pointer;
+    font-size: 14px;
+    color: #495057;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE
+   ========================================================================== */
+
+@media (max-width: 768px) {
+    .oj-modal-overlay {
+        padding: 0;
+        /* Override any WordPress admin bar styles */
+        top: 0 !important;
+        margin-top: 0 !important;
+    }
+    
+    .oj-modal-container {
+        max-width: 100%;
+        max-height: 100dvh; /* Use dynamic viewport height */
+        border-radius: 0;
+        height: auto;
+        min-height: 100dvh;
+        /* Add breathing room at top and bottom */
+        margin: 20px 0;
+    }
+    
+    .oj-modal-header {
+        padding: 16px 16px;
+        /* Extra top padding for breathing room */
+        padding-top: 20px;
+    }
+    
+    .oj-modal-title {
+        font-size: 15px;
+    }
+    
+    .oj-modal-body {
+        padding: 16px;
+    }
+    
+    .oj-modal-footer {
+        padding: 16px 16px;
+        /* Extra bottom padding + safe area */
+        padding-bottom: calc(20px + env(safe-area-inset-bottom, 12px));
+        flex-direction: row;
+        gap: 8px;
+    }
+    
+    .oj-modal-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    /* Better radio/checkbox alignment on mobile */
+    .oj-radio-option,
+    .oj-checkbox-option {
+        padding: 8px 0;
+        align-items: flex-start;
+    }
+    
+    .oj-radio-option input[type="radio"],
+    .oj-checkbox-option input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        min-height: 20px;
+        margin-top: 0;
+        margin-right: 0;
+        margin-left: 0;
+        flex-shrink: 0;
+        position: relative;
+    }
+    
+    /* Fix :before positioning on mobile */
+    .oj-radio-option input[type="radio"]::before,
+    .oj-checkbox-option input[type="checkbox"]::before {
+        margin: 0 !important;
+        position: absolute !important;
+        top: 50% !important;
+        left: 50% !important;
+        transform: translate(-50%, -50%) !important;
+    }
+    
+    .oj-radio-option label,
+    .oj-checkbox-option label {
+        font-size: 15px;
+        line-height: 1.4;
+    }
+}
+
+/* ==========================================================================
+   LOADING STATE
+   ========================================================================== */
+
+.oj-modal-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6c757d;
+}
+
+.oj-modal-loading .spinner {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0073aa;
+    border-radius: 50%;
+    animation: oj-spin 1s linear infinite;
+}
+
+@keyframes oj-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ==========================================================================
+   TAB NAVIGATION (Phase 8 - Customer Info Enhancement)
+   ========================================================================== */
+
+/* Tab Navigation Container */
+.oj-tabs-nav {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #dee2e6;
+    margin: -20px -20px 24px -20px;
+    padding: 0 20px;
+    background: #f8f9fa;
+}
+
+/* Tab Buttons */
+.oj-tab-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 16px 20px;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 15px;
+    font-weight: 500;
+    color: #6c757d;
+    position: relative;
+    margin-bottom: -2px;
+}
+
+.oj-tab-btn:hover {
+    color: #495057;
+    background: rgba(0, 115, 170, 0.05);
+}
+
+.oj-tab-btn.active {
+    color: #0073aa;
+    border-bottom-color: #0073aa;
+    background: white;
+}
+
+.oj-tab-icon {
+    font-size: 18px;
+}
+
+.oj-tab-label {
+    display: inline;
+}
+
+/* Tab Content Area */
+.oj-tabs-content {
+    position: relative;
+}
+
+/* Tab Panes */
+.oj-tab-pane {
+    display: none;
+    animation: oj-fadeIn 0.3s ease;
+}
+
+.oj-tab-pane.active {
+    display: block;
+}
+
+@keyframes oj-fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mobile Tab Adjustments */
+@media (max-width: 768px) {
+    .oj-tabs-nav {
+        margin: -16px -16px 16px -16px;
+        padding: 0 16px;
+    }
+    
+    .oj-tab-btn {
+        padding: 10px 8px;
+        font-size: 13px;
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .oj-tab-icon {
+        font-size: 18px;
+    }
+    
+    .oj-tab-label {
+        font-size: 11px;
+    }
+}
+
+/* ==========================================================================
+   COLLAPSIBLE ADDRESS SECTIONS (Phase 8 - Step 3)
+   ========================================================================== */
+
+/* Address Section Container */
+.oj-address-section {
+    margin-bottom: 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Address Header (Clickable) */
+.oj-address-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: #f8f9fa;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    font-size: 15px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.oj-address-header:hover {
+    background: #e9ecef;
+}
+
+.oj-address-header.active {
+    background: #e7f3f8;
+    color: #0073aa;
+}
+
+.oj-address-icon {
+    font-size: 20px;
+}
+
+.oj-address-title {
+    flex: 1;
+}
+
+.oj-address-arrow {
+    font-size: 12px;
+    transition: transform 0.2s ease;
+}
+
+.oj-address-header.active .oj-address-arrow {
+    transform: rotate(180deg);
+}
+
+/* Address Content (Collapsible) */
+.oj-address-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    padding: 0 20px;
+}
+
+.oj-address-content.show {
+    max-height: 1000px;
+    padding: 20px;
+}
+
+/* Map Button */
+.oj-map-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    background: #0073aa;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 18px;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.oj-map-btn:hover {
+    background: #005177;
+    transform: scale(1.05);
+}
+
+/* Mobile Adjustments for Addresses */
+@media (max-width: 768px) {
+    .oj-address-header {
+        padding: 14px 16px;
+        font-size: 14px;
+    }
+    
+    .oj-address-icon {
+        font-size: 18px;
+    }
+    
+    .oj-address-content.show {
+        padding: 16px;
+    }
+    
+    .oj-map-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+    }
+}
+
+/* ==========================================================================
+   HISTORY TAB - SIMPLE WOOCOMMERCE STYLE (Phase 8 - Step 4)
+   ========================================================================== */
+
+/* History Container */
+.oj-history-simple {
+    padding: 0;
+}
+
+/* Stats Table */
+.oj-stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.oj-stats-table tbody tr {
+    border-bottom: 1px solid #f0f0f1;
+}
+
+.oj-stats-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.oj-stats-label {
+    padding: 12px 0;
+    font-size: 14px;
+    color: #646970;
+    font-weight: 400;
+}
+
+.oj-stats-value {
+    padding: 12px 0;
+    font-size: 14px;
+    color: #1d2327;
+    font-weight: 600;
+    text-align: right;
+}
+
+/* AI Feature (Disabled) */
+.oj-ai-disabled {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 0;
+    border-top: 1px solid #f0f0f1;
+    margin-top: 8px;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.oj-ai-disabled .oj-ai-icon {
+    font-size: 18px;
+}
+
+.oj-ai-disabled .oj-ai-text {
+    font-size: 14px;
+    color: #646970;
+    font-weight: 400;
+    flex: 1;
+}
+
+.oj-ai-disabled .oj-ai-badge {
+    font-size: 11px;
+    color: #646970;
+    background: #f0f0f1;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-style: italic;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .oj-stats-label,
+    .oj-stats-value {
+        padding: 10px 0;
+        font-size: 13px;
+    }
+    
+    .oj-ai-disabled {
+        padding: 10px 0;
+    }
+    
+    .oj-ai-disabled .oj-ai-icon {
+        font-size: 16px;
+    }
+    
+    .oj-ai-disabled .oj-ai-text {
+        font-size: 13px;
+    }
+    
+    .oj-ai-disabled .oj-ai-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+/* ==========================================================================
+   COUPON MODAL STYLES (New Feature)
+   ========================================================================== */
+
+/* Coupon Tabs Container */
+.oj-coupon-tabs {
+    width: 100%;
+    display: block !important;
+    visibility: visible !important;
+}
+
+/* Tab Navigation */
+.oj-tab-nav {
+    display: flex;
+    border-bottom: 2px solid #e1e5e9;
+    margin-bottom: 20px;
+}
+
+.oj-tab-btn {
+    flex: 1;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: #6c757d;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 2px solid transparent;
+}
+
+.oj-tab-btn:hover {
+    color: #495057;
+    background: #f8f9fa;
+}
+
+.oj-tab-btn.active {
+    color: #0073aa;
+    border-bottom-color: #0073aa;
+    background: #f8f9fa;
+}
+
+/* Tab Content - Only for order editor modal */
+.oj-modal-container .oj-tab-content {
+    min-height: 400px;
+    display: block !important;
+    visibility: visible !important;
+}
+
+.oj-tab-panel {
+    display: none !important;
+}
+
+.oj-tab-panel.active {
+    display: block !important;
+}
+
+/* Applied Coupons Section */
+.oj-applied-coupon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #e8f5e8;
+    border: 1px solid #c3e6c3;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.oj-coupon-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.oj-coupon-code {
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: #2c3e50;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.oj-coupon-savings {
+    color: #27ae60;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+/* Available Coupons Grid */
+.oj-available-coupons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 4px;
+}
+
+.oj-available-coupon {
+    padding: 12px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.oj-available-coupon:hover {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.1);
+    transform: translateY(-1px);
+}
+
+.oj-coupon-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.oj-coupon-amount {
+    color: #27ae60;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+.oj-coupon-description {
+    color: #6c757d;
+    font-size: 12px;
+    line-height: 1.4;
+    margin-bottom: 6px;
+}
+
+.oj-coupon-badge {
+    background: #ffc107;
+    color: #856404;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+/* No Coupons Message */
+.oj-no-coupons {
+    text-align: center;
+    color: #6c757d;
+    font-style: italic;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px dashed #dee2e6;
+}
+
+/* Modal Button Visibility */
+.tab-create-only {
+    display: none;
+}
+
+.tab-create-only.show {
+    display: inline-block !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .oj-available-coupons {
+        grid-template-columns: 1fr;
+    }
+    
+    .oj-tab-btn {
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+    
+    .oj-coupon-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+}
+

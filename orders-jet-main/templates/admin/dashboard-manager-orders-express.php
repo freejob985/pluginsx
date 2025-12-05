@@ -1,0 +1,537 @@
+<?php
+/**
+ * Orders Express - Clean Architecture Implementation
+ * Lightning fast active orders management with AJAX filtering
+ * 
+ * @package Orders_Jet
+ * @version 2.0.0
+ */
+
+// Prevent direct access
+if (!defined('ABSPATH')) {
+    exit;
+}
+
+// Security check - verify user permissions
+if (!current_user_can('access_oj_manager_dashboard') && 
+    !current_user_can('access_oj_kitchen_dashboard') && 
+    !current_user_can('manage_options')) {
+    wp_die(__('You do not have permission to access this page.', 'orders-jet'));
+}
+
+// ============================================================================
+// USER FUNCTION DETECTION - WordPress Native Approach
+// ============================================================================
+
+// Get current user's Orders Jet function (manager/kitchen/waiter)
+$user_function = oj_get_user_function();
+$is_kitchen_user = ($user_function === 'kitchen');
+$user_kitchen_type = null;
+
+if ($is_kitchen_user) {
+    // Get kitchen specialization from meta (food, beverages, or both)
+    $user_kitchen_type = oj_get_kitchen_specialization();
+    
+}
+
+// Enqueue existing beautiful CSS - no new styles needed
+wp_enqueue_style('oj-manager-orders-cards', ORDERS_JET_PLUGIN_URL . 'assets/css/manager-orders-cards.css', array(), ORDERS_JET_VERSION);
+
+// Enqueue Express Dashboard specific styles (Phase 1: CSS Extraction)
+wp_enqueue_style('oj-dashboard-express', ORDERS_JET_PLUGIN_URL . 'assets/css/dashboard-express.css', array('oj-manager-orders-cards'), ORDERS_JET_VERSION);
+
+// Enqueue kitchen-specific styles for kitchen users
+if ($is_kitchen_user) {
+    wp_enqueue_style('oj-kitchen-express', ORDERS_JET_PLUGIN_URL . 'assets/css/kitchen-express.css', array('oj-dashboard-express'), ORDERS_JET_VERSION);
+    // Add body class for kitchen users (for JavaScript detection)
+    add_filter('admin_body_class', function($classes) {
+        return $classes . ' oj-kitchen-user';
+    });
+}
+
+// Initialize services for template use (Phase 3: Service Integration)
+$kitchen_service = new Orders_Jet_Kitchen_Service();
+$order_method_service = new Orders_Jet_Order_Method_Service();
+$kitchen_filter_service = new Orders_Jet_Kitchen_Filter_Service();
+
+// Enqueue admin.js for auto-refresh functionality (JavaScript Optimization)
+wp_enqueue_script('orders-jet-admin', ORDERS_JET_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), ORDERS_JET_VERSION, true);
+
+// Localize admin script for auto-refresh functionality
+wp_localize_script('orders-jet-admin', 'OrdersJetAdmin', array(
+    'ajaxUrl' => admin_url('admin-ajax.php'),
+    'nonces' => array(
+        'dashboard' => wp_create_nonce('oj_dashboard_nonce')
+    )
+));
+
+// Note: Removed duplicate ojExpressData localization to prevent conflicts
+// OrdersJetAdmin object provides the necessary AJAX config for auto-refresh
+
+// Enqueue and localize JavaScript (Phase 2: JavaScript Localization)
+wp_enqueue_script('oj-dashboard-express', ORDERS_JET_PLUGIN_URL . 'assets/js/dashboard-express.js', array('jquery', 'orders-jet-admin'), ORDERS_JET_VERSION, true);
+wp_localize_script('oj-dashboard-express', 'ojExpressData', array(
+    'ajaxUrl' => admin_url('admin-ajax.php'),
+    'adminUrl' => admin_url('post.php'),
+    'nonces' => array(
+        'dashboard' => wp_create_nonce('oj_dashboard_nonce'),
+        'table_order' => wp_create_nonce('oj_table_order'),
+        'invoice' => wp_create_nonce('oj_get_invoice')
+    ),
+    'i18n' => array(
+        'confirming' => __('Confirming...', 'orders-jet'),
+        'paid' => __('Paid?', 'orders-jet'),
+        'closing' => __('Closing...', 'orders-jet'),
+        'forceClosing' => __('Force Closing...', 'orders-jet'),
+        'closeTable' => __('Close Table', 'orders-jet'),
+        'paymentMethod' => __('Payment Method', 'orders-jet'),
+        'howPaid' => __('How was this order paid?', 'orders-jet'),
+        'cash' => __('Cash', 'orders-jet'),
+        'card' => __('Card', 'orders-jet'),
+        'other' => __('Other', 'orders-jet'),
+        'viewOrderDetails' => __('View Order Details', 'orders-jet'),
+        'dinein' => __('Dine-in', 'orders-jet'),
+        'combined' => __('Combined', 'orders-jet'),
+        'ready' => __('Ready', 'orders-jet'),
+        'clickToContinue' => __('Click OK to continue or Cancel to keep the table open.', 'orders-jet'),
+        // Notification messages
+        'printFailed' => __('Print failed:', 'orders-jet'),
+        'failedToLoadInvoice' => __('Failed to load invoice', 'orders-jet'),
+        'paymentConfirmed' => __('Payment confirmed! Order completed.', 'orders-jet'),
+        'failedToConfirmPayment' => __('Failed to confirm payment', 'orders-jet'),
+        'connectionError' => __('Connection error', 'orders-jet'),
+        'tableClosed' => __('Table closed! Combined order created.', 'orders-jet'),
+        'failedToForceClose' => __('Failed to force close table', 'orders-jet'),
+        'connectionErrorForceClose' => __('Connection error during force close', 'orders-jet'),
+        'tableForceClose' => __('Table force closed! Combined order created.', 'orders-jet'),
+        'failedToCloseTable' => __('Failed to close table', 'orders-jet')
+    )
+));
+
+/**
+ * Helper function: Prepare clean order data using services (Phase 4A: Performance Critical)
+ */
+function oj_express_prepare_order_data($order, $kitchen_service, $order_method_service) {
+    $kitchen_status = $kitchen_service->get_kitchen_readiness_status($order);
+    
+    // Pre-process items text for performance (Phase 4A)
+    $items = $order->get_items();
+    $items_text = array();
+    foreach ($items as $item) {
+        $product_name = $item->get_name();
+        $quantity = $item->get_quantity();
+        $items_text[] = esc_html($quantity) . 'x ' . esc_html($product_name);
+    }
+    $items_display = implode(' ', $items_text);
+    
+    // Check for guest invoice request (simplified approach)
+    $table_number = $order->get_meta('_oj_table_number');
+    $guest_invoice_requested = false;
+    $invoice_request_time = '';
+    
+    if (!empty($table_number)) {
+        // Get the table post to check for invoice request
+        $table_posts = get_posts(array(
+            'post_type' => 'oj_table',
+            'meta_query' => array(
+                array(
+                    'key' => '_oj_table_number',
+                    'value' => $table_number,
+                    'compare' => '='
+                )
+            ),
+            'posts_per_page' => 1
+        ));
+        
+        if (!empty($table_posts)) {
+            $table_id = $table_posts[0]->ID;
+            $invoice_request_status = get_post_meta($table_id, '_oj_invoice_request_status', true);
+            $guest_invoice_requested = ($invoice_request_status === 'pending');
+            $invoice_request_time = get_post_meta($table_id, '_oj_guest_invoice_requested', true);
+        }
+    }
+
+    return array(
+        'id' => $order->get_id(),
+        'number' => $order->get_order_number(),
+        'status' => $order->get_status(),
+        'method' => $order_method_service->get_order_method($order),
+        'table' => $table_number,
+        'total' => $order->get_total(),
+        'date' => $order->get_date_created(),
+        'customer' => trim($order->get_billing_first_name() . ' ' . $order->get_billing_last_name()) ?: $order->get_billing_email() ?: __('Guest', 'orders-jet'),
+        'items' => $items,
+        'items_display' => $items_display, // Pre-processed for performance
+        'item_count' => count($items),     // Pre-calculated for performance
+        'kitchen_type' => $kitchen_status['kitchen_type'],
+        'kitchen_status' => $kitchen_status,
+        'guest_invoice_requested' => $guest_invoice_requested,
+        'invoice_request_time' => $invoice_request_time,
+        'order_object' => $order          // Pass order object to avoid re-querying (Phase 4A)
+    );
+}
+
+/**
+ * Helper function: Get optimized badge data directly from services (Phase 4A: Performance Critical)
+ */
+function oj_express_get_optimized_badge_data($order, $kitchen_service, $order_method_service) {
+    // Get structured data directly instead of parsing HTML (Phase 4A Performance)
+    $kitchen_status = $kitchen_service->get_kitchen_readiness_status($order);
+    $order_method = $order_method_service->get_order_method($order);
+    $kitchen_type = $kitchen_status['kitchen_type'];
+    $order_status = $order->get_status();
+    
+    // Status badge data (optimized logic)
+    if ($order_status === 'pending') {
+        $status_data = array(
+            'class' => 'ready',
+            'icon' => '✅',
+            'text' => __('Ready', 'orders-jet')
+        );
+    } elseif ($order_status === 'processing') {
+        if ($kitchen_type === 'mixed') {
+            if ($kitchen_status['food_ready'] && !$kitchen_status['beverage_ready']) {
+                $status_data = array('class' => 'partial', 'icon' => '🍕✅ 🥤⏳', 'text' => __('Waiting for Bev.', 'orders-jet'));
+            } elseif (!$kitchen_status['food_ready'] && $kitchen_status['beverage_ready']) {
+                $status_data = array('class' => 'partial', 'icon' => '🍕⏳ 🥤✅', 'text' => __('Waiting for Food', 'orders-jet'));
+            } else {
+                $status_data = array('class' => 'partial', 'icon' => '🍕⏳ 🥤⏳', 'text' => __('Both Kitchens', 'orders-jet'));
+            }
+        } elseif ($kitchen_type === 'food') {
+            $status_data = array('class' => 'partial', 'icon' => '🍕⏳', 'text' => __('Waiting for Food', 'orders-jet'));
+        } elseif ($kitchen_type === 'beverages') {
+            $status_data = array('class' => 'partial', 'icon' => '🥤⏳', 'text' => __('Waiting for Bev.', 'orders-jet'));
+        } else {
+            $status_data = array('class' => 'kitchen', 'icon' => '👨‍🍳', 'text' => __('Kitchen', 'orders-jet'));
+        }
+    } elseif ($order_status === 'completed') {
+        $status_data = array(
+            'class' => 'completed',
+            'icon' => '✅',
+            'text' => __('Completed', 'orders-jet')
+        );
+    } else {
+        $status_data = array('class' => 'kitchen', 'icon' => '👨‍🍳', 'text' => __('Kitchen', 'orders-jet'));
+    }
+    
+    // Type badge data (optimized logic)
+    $type_icons = array('dinein' => '🍽️', 'takeaway' => '📦', 'delivery' => '🚚');
+    $type_texts = array('dinein' => __('Dine-in', 'orders-jet'), 'takeaway' => __('Takeaway', 'orders-jet'), 'delivery' => __('Delivery', 'orders-jet'));
+    $type_data = array(
+        'class' => $order_method,
+        'icon' => $type_icons[$order_method] ?? '📦',
+        'text' => $type_texts[$order_method] ?? __('Takeaway', 'orders-jet')
+    );
+    
+    // Kitchen badge data (optimized logic)
+    $kitchen_icons = array('food' => '🍕', 'beverages' => '🥤', 'mixed' => '🍽️');
+    $kitchen_texts = array('food' => __('Food', 'orders-jet'), 'beverages' => __('Beverages', 'orders-jet'), 'mixed' => __('Mixed', 'orders-jet'));
+    $kitchen_data = array(
+        'class' => $kitchen_type,
+        'icon' => $kitchen_icons[$kitchen_type] ?? '🍕',
+        'text' => $kitchen_texts[$kitchen_type] ?? __('Food', 'orders-jet')
+    );
+    
+    return array(
+        'status' => $status_data,
+        'type' => $type_data,
+        'kitchen' => $kitchen_data
+    );
+}
+
+/**
+ * Helper function: Process badge data from services (Phase 4B: Code Structure) - DEPRECATED
+ * Kept for backward compatibility, use oj_express_get_optimized_badge_data() instead
+ */
+function oj_express_process_badge_data($order, $kitchen_service, $order_method_service) {
+    // Redirect to optimized version (Phase 4A)
+    return oj_express_get_optimized_badge_data($order, $kitchen_service, $order_method_service);
+}
+
+/**
+ * Helper function: Generate action buttons HTML (Phase 4B: Code Structure)
+ */
+function oj_express_get_action_buttons($order_data, $kitchen_status) {
+    $order_id = $order_data['id'];
+    $status = $order_data['status'];
+    $kitchen_type = $order_data['kitchen_type'];
+    $table_number = $order_data['table'];
+    $guest_invoice_requested = $order_data['guest_invoice_requested'] ?? false;
+    
+    $buttons = '';
+    
+    // Check if this order has a guest invoice request
+    // ONLY show for ready/completed orders, not orders still being prepared
+    if ($guest_invoice_requested && !empty($table_number) && in_array($status, ['pending', 'completed', 'pending-payment'])) {
+        // Guest has requested invoice - show special workflow
+        $buttons .= sprintf(
+            '<div class="oj-guest-invoice-notice">🔔 Guest requested invoice</div>'
+        );
+        
+        if ($status === 'pending') {
+            // Show "Close Table" button with special styling for guest requests
+            $buttons .= sprintf(
+                '<button class="oj-action-btn primary oj-close-table guest-request" data-order-id="%s" data-table-number="%s">🍽️ %s</button>',
+                esc_attr($order_id),
+                esc_attr($table_number),
+                __('Close Table', 'orders-jet')
+            );
+        }
+        
+        return $buttons;
+    }
+    
+    if ($status === 'processing') {
+        if ($kitchen_type === 'mixed') {
+            // Mixed kitchen - show individual buttons for unready kitchens
+            if (!$kitchen_status['food_ready']) {
+                $buttons .= sprintf(
+                    '<button class="oj-action-btn primary oj-mark-ready-food" data-order-id="%s" data-kitchen="food">🍕 %s</button>',
+                    esc_attr($order_id),
+                    __('Food Ready', 'orders-jet')
+                );
+            }
+            if (!$kitchen_status['beverage_ready']) {
+                $buttons .= sprintf(
+                    '<button class="oj-action-btn primary oj-mark-ready-beverage" data-order-id="%s" data-kitchen="beverages">🥤 %s</button>',
+                    esc_attr($order_id),
+                    __('Bev. Ready', 'orders-jet')
+                );
+            }
+        } else {
+            // Single kitchen - show appropriate button
+            $icon = $kitchen_type === 'food' ? '🍕' : ($kitchen_type === 'beverages' ? '🥤' : '🔥');
+            $text = $kitchen_type === 'food' ? __('Food Ready', 'orders-jet') : 
+                   ($kitchen_type === 'beverages' ? __('Bev. Ready', 'orders-jet') : __('Mark Ready', 'orders-jet'));
+            
+            $buttons .= sprintf(
+                '<button class="oj-action-btn primary oj-mark-ready" data-order-id="%s" data-kitchen="%s">%s %s</button>',
+                esc_attr($order_id),
+                esc_attr($kitchen_type),
+                $icon,
+                $text
+            );
+        }
+    } elseif ($status === 'pending') {
+        if (!empty($table_number)) {
+            // Table order - show close table button
+            $buttons .= sprintf(
+                '<button class="oj-action-btn primary oj-close-table" data-order-id="%s" data-table-number="%s">🍽️ %s</button>',
+                esc_attr($order_id),
+                esc_attr($table_number),
+                __('Close Table', 'orders-jet')
+            );
+        } else {
+            // Individual order - show complete button
+            $buttons .= sprintf(
+                '<button class="oj-action-btn primary oj-complete-order" data-order-id="%s">✅ %s</button>',
+                esc_attr($order_id),
+                __('Complete', 'orders-jet')
+            );
+        }
+    }
+    
+    return $buttons;
+}
+
+/**
+ * Helper function: Update filter counts (unchanged logic)
+ */
+function oj_express_update_filter_counts(&$counts, $order_data) {
+    $status = $order_data['status'];
+    $method = $order_data['method'];
+    $kitchen_type = $order_data['kitchen_type'];
+    
+    // Count all active orders
+    $counts['active']++;
+    
+    // Count by status
+    if ($status === 'processing') {
+        $counts['processing']++;
+    } elseif ($status === 'pending') {
+        $counts['pending']++;
+    }
+    
+    // Count by method (all methods including fallback)
+    if ($method === 'dinein') {
+        $counts['dinein']++;
+    } elseif ($method === 'takeaway') {
+        $counts['takeaway']++;
+    } elseif ($method === 'delivery') {
+        $counts['delivery']++;
+    }
+    
+    // Count by kitchen type - mixed orders count in both kitchens
+    if ($kitchen_type === 'food' || $kitchen_type === 'mixed') {
+        $counts['food_kitchen']++;
+    }
+    if ($kitchen_type === 'beverages' || $kitchen_type === 'mixed') {
+        $counts['beverage_kitchen']++;
+    }
+}
+
+// ============================================================================
+// MAIN QUERY - Single optimized query for active orders only
+// ============================================================================
+
+// Get appropriate order statuses using kitchen filter service
+$order_statuses = $kitchen_filter_service->get_order_statuses_for_user($is_kitchen_user);
+
+
+$active_orders = wc_get_orders(array(
+    'status' => $order_statuses,
+    'limit' => 50,
+    'orderby' => 'date',
+    'order' => 'ASC', // Oldest first for operational priority
+    'return' => 'objects'
+));
+
+
+// ============================================================================
+// DATA PREPARATION - Clean data structure
+// ============================================================================
+
+$orders_data = array();
+$filter_counts = array(
+    'active' => 0,
+    'processing' => 0,
+    'pending' => 0,
+    'dinein' => 0,
+    'takeaway' => 0,
+    'delivery' => 0,
+    'food_kitchen' => 0,
+    'beverage_kitchen' => 0
+);
+
+foreach ($active_orders as $order) {
+    $order_data = oj_express_prepare_order_data($order, $kitchen_service, $order_method_service);
+    
+    // Always update filter counts (for header stats)
+    oj_express_update_filter_counts($filter_counts, $order_data);
+    
+    // Filter orders for kitchen users using encapsulated service
+    if ($is_kitchen_user) {
+        $order_kitchen_type = $order_data['kitchen_type'];
+        
+        // Use kitchen filter service for clean, encapsulated filtering
+        if (!$kitchen_filter_service->should_show_order_in_kitchen($order, $order_kitchen_type, $user_kitchen_type)) {
+            continue; // Skip orders that don't belong in this kitchen view
+        }
+    }
+    
+    $orders_data[] = $order_data;
+}
+
+
+?>
+
+<div class="wrap oj-manager-orders">
+    <!-- Page Header -->
+    <div class="oj-page-header">
+        <h1 class="oj-page-title">
+            <?php if ($is_kitchen_user): ?>
+                <?php if ($user_kitchen_type === 'food'): ?>
+                    🍕 <?php _e('Food Kitchen', 'orders-jet'); ?>
+                <?php elseif ($user_kitchen_type === 'beverages'): ?>
+                    🥤 <?php _e('Beverage Kitchen', 'orders-jet'); ?>
+                <?php else: ?>
+                    👨‍🍳 <?php _e('Kitchen Display', 'orders-jet'); ?>
+                <?php endif; ?>
+                <span class="oj-subtitle"><?php _e('Your Orders - Ready to Prepare', 'orders-jet'); ?></span>
+            <?php else: ?>
+                ⚡ <?php _e('Orders Express', 'orders-jet'); ?>
+                <span class="oj-subtitle"><?php _e('Active Orders Only - Lightning Fast', 'orders-jet'); ?></span>
+            <?php endif; ?>
+        </h1>
+        
+        <?php 
+        // Render notification center component
+        if (function_exists('oj_render_notification_center')) {
+            oj_render_notification_center();
+        }
+        ?>
+        <!-- Stats removed - numbers are already shown in filter tabs -->
+    </div>
+
+    <?php if (!$is_kitchen_user): ?>
+        <!-- Manager Header with Refresh Button -->
+        <div class="oj-manager-controls" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="flex: 1;">
+                <!-- Filter Tabs will be below -->
+            </div>
+            <button class="oj-kitchen-refresh" onclick="refreshKitchenDashboard();" style="margin-left: auto;">
+                <span class="dashicons dashicons-update"></span>
+                <?php _e('Refresh Orders', 'orders-jet'); ?>
+            </button>
+        </div>
+        
+        <!-- Filter Tabs - Manager View -->
+        <div class="oj-filters">
+            <button class="oj-filter-btn active" data-filter="active">
+                🔥 <?php _e('Active', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['active']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="processing">
+                👨‍🍳 <?php _e('Kitchen', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['processing']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="pending">
+                ✅ <?php _e('Ready', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['pending']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="dinein">
+                🍽️ <?php _e('Dine-in', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['dinein']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="takeaway">
+                📦 <?php _e('Takeaway', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['takeaway']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="delivery">
+                🚚 <?php _e('Delivery', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['delivery']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="food-kitchen">
+                🍕 <?php _e('Food', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['food_kitchen']; ?></span>
+            </button>
+            <button class="oj-filter-btn" data-filter="beverage-kitchen">
+                🥤 <?php _e('Beverage', 'orders-jet'); ?>
+                <span class="oj-filter-count"><?php echo $filter_counts['beverage_kitchen']; ?></span>
+            </button>
+        </div>
+    <?php else: ?>
+        <!-- Kitchen Header - Simple, Clean -->
+        <div class="oj-kitchen-header">
+            <div class="oj-kitchen-info">
+                <span class="oj-kitchen-count">
+                    <?php 
+                    // Show count of displayed orders (already filtered)
+                    printf(_n('%d order', '%d orders', count($orders_data), 'orders-jet'), count($orders_data));
+                    ?>
+                </span>
+                <span class="oj-kitchen-subtitle">
+                    <?php _e('Ready to prepare', 'orders-jet'); ?>
+                </span>
+            </div>
+            <button class="oj-kitchen-refresh" onclick="refreshKitchenDashboard();">
+                <span class="dashicons dashicons-update"></span>
+                <?php _e('Refresh Orders', 'orders-jet'); ?>
+            </button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Orders Grid -->
+    <div class="oj-orders-grid">
+        <?php if (empty($orders_data)) : ?>
+            <?php include __DIR__ . '/partials/empty-state.php'; ?>
+        <?php else : ?>
+            <?php foreach ($orders_data as $order_data) : ?>
+                <?php include __DIR__ . '/partials/order-card.php'; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+</div>
+
+
+

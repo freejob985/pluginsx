@@ -1,0 +1,328 @@
+/**
+ * Kitchen Express Styles
+ * Simple, clean interface for kitchen staff
+ */
+
+/* Kitchen Header - Simple and Bold */
+.oj-kitchen-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid #ff5722;
+}
+
+.oj-kitchen-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.oj-kitchen-count {
+    font-size: 24px;
+    font-weight: 700;
+    color: #333;
+}
+
+.oj-kitchen-subtitle {
+    font-size: 16px;
+    color: #666;
+    font-weight: 400;
+    font-style: italic;
+}
+
+.oj-kitchen-refresh {
+    background: #ff5722;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.oj-kitchen-refresh:hover {
+    background: #e64a19;
+    transform: translateY(-1px);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .oj-kitchen-header {
+        flex-direction: column;
+        gap: 16px;
+        align-items: stretch;
+    }
+    
+    .oj-kitchen-info {
+        text-align: center;
+    }
+    
+    .oj-kitchen-refresh {
+        width: 100%;
+    }
+}
+
+/* ============================================================================
+   KITCHEN ORDER CARDS - Invoice Style
+   ============================================================================ */
+
+.oj-kitchen-card {
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Card Header */
+.oj-kitchen-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #333;
+    margin-bottom: 12px;
+}
+
+.oj-kitchen-order-ref {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.oj-kitchen-order-number {
+    font-size: 24px;
+    font-weight: bold;
+    color: #c41e3a;
+}
+
+.oj-kitchen-table {
+    font-size: 18px;
+    font-weight: bold;
+    background: #333;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+}
+
+.oj-kitchen-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    color: #666;
+}
+
+.oj-kitchen-method {
+    font-size: 20px;
+}
+
+.oj-kitchen-time {
+    font-weight: 600;
+}
+
+/* Customer Name */
+.oj-kitchen-customer {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 16px;
+}
+
+/* Items List */
+.oj-kitchen-items {
+    margin-bottom: 16px;
+}
+
+.oj-kitchen-item {
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.oj-kitchen-item.highlighted {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+}
+
+.oj-kitchen-item.dimmed {
+    opacity: 0.4;
+    font-size: 0.9em;
+}
+
+.oj-kitchen-item-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+}
+
+.oj-kitchen-qty {
+    background: #007cba;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 50%;
+    min-width: 36px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.oj-kitchen-name {
+    flex: 1;
+}
+
+/* Variations, Add-ons, Notes */
+.oj-kitchen-variations,
+.oj-kitchen-addons {
+    margin-left: 48px;
+    margin-top: 4px;
+}
+
+.oj-kitchen-variation,
+.oj-kitchen-addon {
+    display: inline-block;
+    background: #f8f9fa;
+    padding: 2px 8px;
+    margin: 2px 4px 2px 0;
+    border-radius: 12px;
+    font-size: 14px;
+    border: 1px solid #dee2e6;
+}
+
+.oj-kitchen-addon {
+    background: #e7f3ff;
+    border-color: #007cba;
+    color: #007cba;
+    font-weight: 600;
+}
+
+.oj-kitchen-notes {
+    margin-left: 48px;
+    margin-top: 8px;
+    background: #fff3cd;
+    padding: 8px;
+    border-radius: 4px;
+    font-style: italic;
+    border-left: 4px solid #ffc107;
+    font-size: 15px;
+}
+
+/* Action Button */
+.oj-kitchen-action {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 2px solid #eee;
+}
+
+.oj-kitchen-ready-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.oj-kitchen-ready-btn:hover {
+    background: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.oj-kitchen-waiting {
+    text-align: center;
+    padding: 12px;
+    background: #fff3cd;
+    border-radius: 6px;
+    color: #856404;
+    font-weight: 600;
+}
+
+.oj-kitchen-complete {
+    text-align: center;
+    padding: 12px;
+    background: #d4edda;
+    border-radius: 6px;
+    color: #155724;
+    font-weight: 600;
+    font-size: 18px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    .oj-kitchen-card {
+        padding: 16px;
+    }
+    
+    .oj-kitchen-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .oj-kitchen-order-number {
+        font-size: 20px;
+    }
+    
+    .oj-kitchen-table {
+        font-size: 16px;
+    }
+    
+    .oj-kitchen-item-main {
+        font-size: 16px;
+    }
+    
+    .oj-kitchen-qty {
+        min-width: 32px;
+        font-size: 14px;
+    }
+}
+
+/* Order Notes Styling - Prominent for Kitchen Staff */
+.oj-kitchen-order-notes {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+    border-radius: 8px;
+    padding: 12px;
+    margin: 12px 0;
+    font-family: 'Courier New', monospace;
+}
+
+.oj-kitchen-notes-header {
+    font-weight: bold;
+    font-size: 13px;
+    color: #856404;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.oj-kitchen-notes-content {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+    font-weight: 500;
+    background: white;
+    padding: 8px;
+    border-radius: 4px;
+    border-left: 4px solid #ffc107;
+}
+

@@ -1,0 +1,155 @@
+/* ========================================
+   ENHANCED INSIGHTS CARDS - REPORTS PAGE
+   ======================================== */
+
+/* Desktop: 6 cards in 1 row */
+.oj-dashboard .oj-insights-grid {
+    display: grid !important;
+    grid-template-columns: repeat(6, 1fr) !important;
+    gap: 20px !important;
+    margin: 20px 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.oj-dashboard .oj-insight-card {
+    background: #fff !important;
+    border-radius: 8px !important;
+    padding: 18px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+    border-left: 4px solid #2271b1 !important;
+    transition: all 0.2s ease !important;
+    position: relative !important;
+    width: auto !important;
+    min-width: 0 !important;
+    flex: none !important;
+    box-sizing: border-box !important;
+}
+
+.oj-dashboard .oj-insight-card:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+    transform: translateY(-2px) !important;
+}
+
+.oj-dashboard .oj-insight-card.warning {
+    border-left-color: #dba617 !important;
+}
+
+.oj-dashboard .oj-insight-card.success {
+    border-left-color: #46b450 !important;
+}
+
+.oj-insight-header {
+    margin-bottom: 12px !important;
+}
+
+.oj-insight-title {
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #2271b1 !important;
+}
+
+.oj-insight-value {
+    font-size: 22px !important;
+    font-weight: bold !important;
+    color: #135e96 !important;
+    margin-bottom: 8px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.oj-insight-trend {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    padding: 2px 6px !important;
+    border-radius: 4px !important;
+    white-space: nowrap !important;
+}
+
+.oj-insight-trend.up {
+    color: #46b450 !important;
+    background: #f0f9f0 !important;
+}
+
+.oj-insight-trend.down {
+    color: #dc3232 !important;
+    background: #fdf0f0 !important;
+}
+
+.oj-insight-comparison {
+    font-size: 12px !important;
+    color: #646970 !important;
+    margin-bottom: 6px !important;
+}
+
+.oj-insight-additional {
+    font-size: 12px !important;
+    color: #646970 !important;
+    font-weight: 500 !important;
+}
+
+.oj-insight-card.warning .oj-insight-additional {
+    color: #b07c00 !important;
+}
+
+.oj-insight-card.success .oj-insight-additional {
+    color: #2e7d32 !important;
+}
+
+/* Medium screens: 3 cards per row (2 rows total for 6 cards) */
+@media (max-width: 1200px) and (min-width: 769px) {
+    .oj-dashboard .oj-insights-grid {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 18px !important;
+        margin: 18px 0 !important;
+    }
+}
+
+/* Mobile: 2 cards per row (3 rows total for 6 cards) */
+@media (max-width: 768px) {
+    .oj-dashboard .oj-insights-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 15px !important;
+        margin: 15px 0 !important;
+    }
+    
+    .oj-dashboard .oj-insight-card {
+        padding: 16px !important;
+    }
+    
+    .oj-insight-title {
+        font-size: 13px !important;
+    }
+    
+    .oj-insight-value {
+        font-size: 20px !important;
+        margin-bottom: 6px !important;
+    }
+    
+    .oj-insight-trend {
+        font-size: 12px !important;
+    }
+    
+    .oj-insight-comparison,
+    .oj-insight-additional {
+        font-size: 11px !important;
+    }
+}
+
+/* Very small mobile: Stack cards vertically */
+@media (max-width: 480px) {
+    .oj-dashboard .oj-insights-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+    }
+    
+    .oj-dashboard .oj-insight-card {
+        padding: 14px !important;
+    }
+    
+    .oj-insight-value {
+        font-size: 18px !important;
+    }
+}

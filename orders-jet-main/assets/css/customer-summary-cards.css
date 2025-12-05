@@ -1,0 +1,189 @@
+/**
+ * Customer Overlay CSS
+ * Styling for customer overlay on 2nd order cards
+ * 
+ * @package Orders_Jet
+ * @version 1.3.1
+ */
+
+/* Customer Overlay Container */
+.oj-customer-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* Overlay Backdrop */
+.oj-overlay-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(34, 113, 177, 0.95);
+    backdrop-filter: blur(2px);
+}
+
+/* Overlay Content */
+.oj-overlay-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    text-align: center;
+    color: white;
+}
+
+/* Overlay Header */
+.oj-overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.oj-customer-icon {
+    font-size: 1.5em;
+    margin-right: 8px;
+}
+
+.oj-customer-name {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: white;
+}
+
+/* Overlay Stats */
+.oj-overlay-stats {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.oj-overlay-stat {
+    text-align: center;
+}
+
+.oj-stat-number {
+    display: block;
+    font-size: 1.3em;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 2px;
+}
+
+.oj-stat-label {
+    display: block;
+    font-size: 0.8em;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+}
+
+/* Overlay Action */
+.oj-overlay-action {
+    margin-top: auto;
+}
+
+.oj-overlay-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white !important;
+    text-decoration: none !important;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9em;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+}
+
+.oj-overlay-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.oj-overlay-btn:focus {
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .oj-overlay-content {
+        padding: 15px;
+    }
+    
+    .oj-customer-icon {
+        font-size: 1.3em;
+    }
+    
+    .oj-customer-name {
+        font-size: 1em;
+    }
+    
+    .oj-overlay-stats {
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .oj-stat-number {
+        font-size: 1.1em;
+    }
+    
+    .oj-stat-label {
+        font-size: 0.75em;
+    }
+    
+    .oj-overlay-btn {
+        padding: 8px 16px;
+        font-size: 0.85em;
+    }
+}
+
+/* Ensure overlay works with order card positioning */
+.oj-order-card {
+    position: relative; /* Required for absolute positioning of overlay */
+}
+
+/* Hover effect for cards with overlay */
+.oj-order-card:has(.oj-customer-overlay) {
+    cursor: pointer;
+}
+
+.oj-order-card:has(.oj-customer-overlay):hover .oj-customer-overlay {
+    opacity: 1;
+}
+
+/* Animation */
+.oj-customer-overlay {
+    opacity: 0.95;
+    transition: opacity 0.3s ease;
+}
+
+.oj-overlay-content {
+    animation: overlayFadeIn 0.3s ease-out;
+}
+
+@keyframes overlayFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}

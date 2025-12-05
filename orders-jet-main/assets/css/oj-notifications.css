@@ -1,0 +1,592 @@
+/**
+ * Orders Jet - Notification Center Styles
+ * Modern, clean notification system
+ * 
+ * @package Orders_Jet
+ * @version 1.0.0
+ */
+
+/* ============================================================================
+   NOTIFICATION CENTER CONTAINER
+   ============================================================================ */
+
+.oj-notification-center {
+    position: relative;
+    display: inline-block;
+    margin-left: 15px;
+    margin-right: 10px; /* Prevent horizontal scroll when badge appears */
+}
+
+/* ============================================================================
+   NOTIFICATION BELL BUTTON
+   ============================================================================ */
+
+.oj-notification-bell {
+    position: relative;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.oj-notification-bell:hover {
+    background: #f8f9fa;
+    border-color: #0073aa;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 115, 170, 0.2);
+}
+
+.oj-notification-bell:active {
+    transform: scale(0.95);
+}
+
+.oj-notification-bell .dashicons {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    color: #555;
+    transition: color 0.3s ease;
+}
+
+.oj-notification-bell:hover .dashicons {
+    color: #0073aa;
+}
+
+/* Bell animation when there are new notifications */
+.oj-notification-bell.has-notifications {
+    animation: bellRing 2s ease-in-out infinite;
+}
+
+@keyframes bellRing {
+    0%, 100% { transform: rotate(0deg); }
+    10%, 30% { transform: rotate(-10deg); }
+    20%, 40% { transform: rotate(10deg); }
+}
+
+/* ============================================================================
+   NOTIFICATION BADGE (Unread Count)
+   ============================================================================ */
+
+.oj-notification-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: linear-gradient(135deg, #ff4757 0%, #ff6348 100%);
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-shadow: 0 2px 6px rgba(255, 71, 87, 0.4);
+    animation: badgePulse 2s ease-in-out infinite;
+    z-index: 10;
+}
+
+@keyframes badgePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+.oj-notification-badge:empty {
+    display: none;
+}
+
+/* ============================================================================
+   NOTIFICATION DROPDOWN PANEL
+   ============================================================================ */
+
+.oj-notification-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 380px;
+    max-height: 500px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Arrow pointing to bell */
+.oj-notification-panel::before {
+    content: '';
+    position: absolute;
+    top: -8px;
+    right: 15px;
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-bottom: 8px solid white;
+    filter: drop-shadow(0 -2px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* ============================================================================
+   PANEL HEADER
+   ============================================================================ */
+
+.oj-notification-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f8f9fa;
+    border-radius: 8px 8px 0 0;
+}
+
+.oj-notification-panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.oj-mark-all-read {
+    background: transparent;
+    border: none;
+    color: #0073aa;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.oj-mark-all-read:hover {
+    background: #e3f2fd;
+    color: #005a87;
+}
+
+.oj-mark-all-read .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+/* ============================================================================
+   NOTIFICATION LIST
+   ============================================================================ */
+
+.oj-notification-list {
+    overflow-y: auto;
+    max-height: 400px;
+    padding: 0;
+}
+
+/* Custom scrollbar */
+.oj-notification-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.oj-notification-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.oj-notification-list::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 3px;
+}
+
+.oj-notification-list::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+
+/* ============================================================================
+   NOTIFICATION ITEM
+   ============================================================================ */
+
+.oj-notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    position: relative;
+}
+
+.oj-notification-item:hover {
+    background: #f8f9fa;
+}
+
+.oj-notification-item:last-child {
+    border-bottom: none;
+}
+
+/* Unread notification styling */
+.oj-notification-item.unread {
+    background: #e3f2fd;
+    border-left: 4px solid #0073aa;
+}
+
+.oj-notification-item.unread::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(135deg, #0073aa 0%, #005a87 100%);
+}
+
+.oj-notification-item.unread:hover {
+    background: #d1e9f6;
+}
+
+/* Read notification styling - more subtle */
+.oj-notification-item:not(.unread) {
+    background: #fafafa;
+    opacity: 0.85;
+}
+
+.oj-notification-item:not(.unread):hover {
+    background: #f0f0f0;
+    opacity: 1;
+}
+
+.oj-notification-item:not(.unread) .oj-notification-message {
+    color: #666;
+    font-weight: 400;
+}
+
+.oj-notification-item:not(.unread) .oj-notification-icon {
+    opacity: 0.7;
+}
+
+/* Notification icon */
+.oj-notification-icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    background: #f0f0f0;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.oj-notification-item.unread .oj-notification-icon {
+    background: white;
+}
+
+/* Notification content */
+.oj-notification-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.oj-notification-message {
+    font-size: 14px;
+    color: #333;
+    line-height: 1.4;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+.oj-notification-item.unread .oj-notification-message {
+    font-weight: 600;
+}
+
+.oj-notification-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #999;
+}
+
+.oj-notification-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.oj-notification-time .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Mark as read button */
+.oj-notification-mark-read {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: #999;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.2s ease;
+    margin-left: 8px;
+}
+
+.oj-notification-item:hover .oj-notification-mark-read {
+    opacity: 1;
+}
+
+.oj-notification-mark-read:hover {
+    background: #e0e0e0;
+    color: #0073aa;
+}
+
+.oj-notification-mark-read .dashicons {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+}
+
+/* Notification actions container */
+.oj-notification-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 8px;
+}
+
+/* Claim table button */
+.oj-notification-claim-btn {
+    background: #1d4ed8;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
+
+.oj-notification-claim-btn:hover {
+    background: #1e40af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(29, 78, 216, 0.3);
+}
+
+.oj-notification-claim-btn:active {
+    transform: translateY(0);
+}
+
+.oj-notification-claim-btn:disabled {
+    background: #9ca3af;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.oj-notification-claim-btn .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* Claimed state */
+.oj-notification-claimed {
+    background: #10b981;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+    cursor: default;
+}
+
+.oj-notification-claimed .dashicons {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+}
+
+/* ============================================================================
+   EMPTY STATE
+   ============================================================================ */
+
+.oj-notification-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.oj-notification-empty .dashicons {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.oj-notification-empty p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.oj-notification-loading {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.oj-notification-loading .dashicons {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+    color: #0073aa;
+    margin-bottom: 10px;
+}
+
+.oj-notification-loading p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Spin animation for loading */
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ============================================================================
+   RESPONSIVE DESIGN
+   ============================================================================ */
+
+@media screen and (max-width: 768px) {
+    .oj-notification-panel {
+        width: 320px;
+        max-height: 400px;
+    }
+    
+    .oj-notification-list {
+        max-height: 300px;
+    }
+    
+    .oj-notification-item {
+        padding: 12px 15px;
+    }
+    
+    .oj-notification-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .oj-notification-panel {
+        position: fixed;
+        top: 60px !important;
+        left: 10px;
+        right: 10px;
+        width: auto;
+    }
+    
+    .oj-notification-panel::before {
+        display: none;
+    }
+}
+
+/* ============================================================================
+   INTEGRATION WITH ORDERS EXPRESS HEADER
+   ============================================================================ */
+
+.oj-page-header {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.oj-page-header .oj-notification-center {
+    margin-left: auto;
+}
+
+/* Kitchen interface specific adjustments */
+.oj-kitchen-user .oj-notification-bell {
+    border-color: #4caf50;
+}
+
+.oj-kitchen-user .oj-notification-bell:hover {
+    border-color: #45a049;
+}
+
+/* ============================================================================
+   ACCESSIBILITY
+   ============================================================================ */
+
+.oj-notification-bell:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+.oj-notification-item:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: -2px;
+}
+
+.oj-mark-all-read:focus {
+    outline: 2px solid #0073aa;
+    outline-offset: 2px;
+}
+
+/* Screen reader only text */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+

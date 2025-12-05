@@ -1,0 +1,1295 @@
+/**
+ * Filters Slide Panel Styles
+ * Advanced Filters Interface for Orders Master
+ * 
+ * @package Orders_Jet
+ * @version 2.0.0
+ */
+
+/* FLOATING TRIGGER BUTTON */
+.oj-filters-trigger {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 16px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.2);
+}
+
+.oj-filters-trigger:hover {
+    background: #005a87;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 115, 170, 0.3);
+}
+
+.oj-filters-trigger:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 115, 170, 0.2);
+}
+
+.oj-filters-trigger .oj-filters-icon {
+    font-size: 16px;
+}
+
+.oj-filters-trigger .oj-filters-count {
+    background: #dc3232;
+    color: white;
+    border-radius: 10px;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: bold;
+    min-width: 18px;
+    text-align: center;
+    margin-left: 4px;
+}
+
+/* SLIDE-OUT OVERLAY */
+.oj-filters-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    pointer-events: none; /* Ensure it doesn't interfere when hidden */
+}
+
+.oj-filters-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* Allow interaction when active */
+}
+
+/* SLIDE PANEL */
+.oj-filters-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh; /* Use viewport height instead of 100% */
+    height: 100dvh; /* Dynamic viewport height for mobile browsers */
+    background: white;
+    box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; /* Prevent double scrollbar - let body scroll instead */
+}
+
+.oj-filters-overlay.active .oj-filters-panel {
+    transform: translateX(0);
+}
+
+/* Ensure panel is completely hidden when not active */
+.oj-filters-overlay:not(.active) .oj-filters-panel {
+    transform: translateX(100%);
+    visibility: hidden;
+}
+
+/* PANEL HEADER */
+.oj-filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e1e5e9;
+    background: #f8f9fa;
+}
+
+.oj-filters-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1d2327;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.oj-filters-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #646970;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.oj-filters-close:hover {
+    background: #e1e5e9;
+    color: #1d2327;
+}
+
+/* PANEL BODY */
+.oj-filters-body {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    /* Ensure body scrolls but footer stays visible */
+    min-height: 0;
+}
+
+.oj-filters-section {
+    margin-bottom: 32px;
+}
+
+.oj-filters-section h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1d2327;
+    border-bottom: 2px solid #0073aa;
+    padding-bottom: 8px;
+}
+
+.oj-filter-group {
+    margin-bottom: 20px;
+}
+
+.oj-filter-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #1d2327;
+}
+
+.oj-filter-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.oj-filter-select:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+.oj-filter-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #c3c4c7;
+    border-radius: 4px;
+    font-size: 14px;
+    background: white;
+    transition: border-color 0.2s ease;
+}
+
+.oj-filter-input:focus {
+    outline: none;
+    border-color: #0073aa;
+    box-shadow: 0 0 0 1px #0073aa;
+}
+
+/* Amount Filter Styling */
+.oj-amount-filter-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.oj-amount-type {
+    margin-bottom: 4px;
+}
+
+.oj-amount-input-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.oj-amount-input {
+    flex: 1;
+    min-width: 120px;
+}
+
+.oj-range-inputs .oj-range-input {
+    flex: 1;
+    min-width: 80px;
+}
+
+.oj-range-separator {
+    color: #646970;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.oj-section-description {
+    font-size: 12px;
+    color: #646970;
+    margin: 0 0 16px 0;
+    font-style: italic;
+}
+
+/* Custom Date Inputs in Panel */
+.oj-custom-dates-panel {
+    margin-top: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border: 1px solid #e1e5e9;
+    border-radius: 4px;
+}
+
+.oj-date-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.oj-date-inputs .oj-filter-input {
+    flex: 1;
+}
+
+.oj-date-separator {
+    color: #646970;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Range Inputs */
+.oj-range-inputs {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.oj-range-input {
+    flex: 1;
+}
+
+.oj-range-separator {
+    color: #646970;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+/* Filter Notes */
+.oj-filter-note {
+    display: block;
+    margin-top: 4px;
+    font-size: 11px;
+    color: #646970;
+    font-style: italic;
+}
+
+/* PANEL FOOTER */
+.oj-filters-footer {
+    padding: 20px 24px;
+    border-top: 1px solid #e1e5e9;
+    background: #f8f9fa;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    flex-shrink: 0; /* Prevent footer from shrinking */
+    margin-top: auto; /* Push to bottom of flex container */
+    z-index: 10;
+}
+
+.oj-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.oj-btn-primary {
+    background: #0073aa;
+    color: white;
+}
+
+.oj-btn-primary:hover {
+    background: #005a87;
+}
+
+.oj-btn-secondary {
+    background: #646970;
+    color: white;
+}
+
+.oj-btn-secondary:hover {
+    background: #50575e;
+}
+
+.oj-btn-outline {
+    background: transparent;
+    color: #0073aa;
+    border: 1px solid #0073aa;
+}
+
+.oj-btn-outline:hover {
+    background: #0073aa;
+    color: white;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+    .oj-filters-panel {
+        width: 100%;
+        max-width: 100vw;
+        height: 100vh;
+        height: 100dvh; /* Dynamic viewport height for mobile */
+    }
+    
+    /* Better "More Filters" button on mobile */
+    .oj-filters-trigger {
+        padding: 10px 20px;
+        font-size: 14px;
+        font-weight: 600;
+        width: 100%;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 115, 170, 0.25);
+    }
+    
+    .oj-filters-trigger .oj-filters-text {
+        display: inline; /* Show text on mobile */
+    }
+    
+    .oj-filters-trigger .oj-filters-icon {
+        font-size: 18px;
+    }
+    
+    .oj-filters-trigger .oj-filters-count {
+        font-size: 12px;
+        font-weight: 700;
+        padding: 3px 7px;
+        min-width: 20px;
+        text-align: center;
+    }
+    
+    /* Body adjustments for mobile - allow scrolling */
+    .oj-filters-body {
+        padding: 16px;
+        padding-bottom: 20px; /* Extra padding at bottom */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    }
+    
+    /* Footer adjustments for mobile - Always visible at bottom */
+    .oj-filters-footer {
+        flex-direction: row; /* Keep buttons in row on mobile */
+        padding: 14px 16px; /* Slightly more padding for touch targets */
+        padding-bottom: calc(14px + env(safe-area-inset-bottom)); /* Account for iPhone notch */
+        gap: 8px;
+        box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1); /* Shadow to distinguish from body */
+        position: relative; /* Remove sticky positioning on mobile */
+    }
+    
+    /* Buttons layout on mobile - Larger touch targets */
+    .oj-btn {
+        flex: 1; /* Equal width */
+        padding: 12px 10px; /* Increased padding for touch */
+        font-size: 13px;
+        white-space: nowrap;
+        min-height: 44px; /* Apple's recommended minimum touch target */
+    }
+    
+    /* Apply button - primary */
+    .oj-btn-primary {
+        order: 1;
+    }
+    
+    /* Reset button - secondary */
+    .oj-btn-secondary {
+        order: 2;
+    }
+    
+    /* Save View button - outline */
+    .oj-btn-outline {
+        order: 3;
+        flex: 0 0 auto; /* Don't grow, just fit content */
+        padding: 12px 16px;
+        min-width: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .oj-filters-header {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+    
+    .oj-filters-body {
+        padding: 12px;
+        padding-bottom: 16px;
+    }
+    
+    .oj-filters-footer {
+        padding: 12px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        gap: 6px;
+    }
+    
+    .oj-btn {
+        padding: 11px 8px;
+        font-size: 12px;
+        min-height: 42px; /* Slightly smaller but still touchable */
+    }
+    
+    .oj-btn-outline {
+        padding: 11px 12px;
+    }
+}
+
+/* DEBUG PANEL STYLES */
+.oj-debug-panel {
+    background: #1e1e1e;
+    color: #e0e0e0;
+    border: 2px solid #333;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+}
+
+.oj-debug-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #2d2d2d;
+    border-bottom: 1px solid #444;
+    border-radius: 6px 6px 0 0;
+}
+
+.oj-debug-header h3 {
+    margin: 0;
+    color: #4CAF50;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.oj-debug-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.oj-debug-btn {
+    padding: 4px 8px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    font-size: 11px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s ease;
+}
+
+.oj-debug-btn:hover {
+    background: #005a87;
+    color: white;
+}
+
+.oj-debug-show {
+    background: #4CAF50;
+}
+
+.oj-debug-hide {
+    background: #f44336;
+}
+
+.oj-debug-refresh {
+    background: #FF9800;
+}
+
+.oj-debug-content {
+    padding: 16px;
+}
+
+.oj-debug-row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.oj-debug-section {
+    flex: 1;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    border-radius: 4px;
+    padding: 12px;
+}
+
+.oj-debug-section.oj-debug-full-width {
+    flex: none;
+    width: 100%;
+}
+
+.oj-debug-section h4 {
+    margin: 0 0 8px 0;
+    color: #FFC107;
+    font-size: 12px;
+    font-weight: bold;
+    border-bottom: 1px solid #444;
+    padding-bottom: 4px;
+}
+
+.oj-debug-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.oj-debug-table td {
+    padding: 2px 4px;
+    vertical-align: top;
+    border-bottom: 1px solid #333;
+}
+
+.oj-debug-table td:first-child {
+    width: 40%;
+    color: #81C784;
+}
+
+.oj-debug-table code {
+    background: #333;
+    color: #FFD54F;
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-size: 11px;
+}
+
+.oj-debug-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.oj-debug-actions .oj-debug-btn {
+    background: #6A1B9A;
+}
+
+.oj-debug-actions .oj-debug-btn:hover {
+    background: #4A148C;
+}
+
+/* Mobile Debug Panel */
+@media (max-width: 768px) {
+    .oj-debug-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    .oj-debug-header {
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start;
+    }
+    
+    .oj-debug-actions {
+        justify-content: center;
+    }
+    
+    .oj-debug-actions .oj-debug-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* ===================================
+   TAB NAVIGATION STYLING
+   =================================== */
+
+/* Tab Navigation Container */
+.oj-filters-tabs {
+    display: flex;
+    background: #f9f9f9;
+    border-radius: 6px;
+    padding: 4px;
+    gap: 2px;
+}
+
+/* Individual Tab Button */
+.oj-tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #646970;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 40px;
+}
+
+.oj-tab-btn:hover {
+    background: #f0f0f1;
+    color: #1d2327;
+}
+
+.oj-tab-btn.active {
+    background: white;
+    color: #0073aa;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.oj-tab-icon {
+    font-size: 16px;
+}
+
+/* Tab Content */
+.oj-tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.oj-tab-content.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Update Header Layout for Tabs */
+.oj-filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px 24px;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 16px;
+}
+
+/* ===================================
+   SAVED VIEWS STYLING
+   =================================== */
+
+/* Saved Views Container */
+.oj-saved-views-container {
+    padding: 20px 0;
+}
+
+.oj-saved-views-header h4 {
+    margin: 0 0 8px 0;
+    color: #1d2327;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.oj-saved-views-header .oj-section-description {
+    margin: 0 0 20px 0;
+    color: #646970;
+    font-size: 14px;
+}
+
+/* Saved Views List Container */
+.oj-saved-views-list-container {
+    margin-bottom: 20px;
+}
+
+/* Saved Views Loading State */
+.oj-saved-views-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 40px 20px;
+    color: #666;
+}
+
+.oj-saved-views-spinner {
+    display: flex;
+    gap: 4px;
+}
+
+.oj-saved-views-spinner .oj-spinner-dot {
+    width: 6px;
+    height: 6px;
+    background: #999;
+    border-radius: 50%;
+    animation: oj-dot-bounce 1.4s ease-in-out infinite both;
+}
+
+.oj-saved-views-spinner .oj-spinner-dot:nth-child(1) { animation-delay: -0.32s; }
+.oj-saved-views-spinner .oj-spinner-dot:nth-child(2) { animation-delay: -0.16s; }
+.oj-saved-views-spinner .oj-spinner-dot:nth-child(3) { animation-delay: 0s; }
+
+/* View Statistics */
+.oj-saved-views-stats {
+    display: flex;
+    gap: 20px;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #e0e0e0;
+}
+
+.oj-stats-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.oj-stats-label {
+    font-size: 12px;
+    color: #646970;
+    font-weight: 500;
+}
+
+.oj-stats-value {
+    font-size: 16px;
+    color: #1d2327;
+    font-weight: 600;
+}
+
+/* Save Current View Button */
+.oj-save-view-btn {
+    width: 100%;
+    background: #f0f6fc;
+    border: 1px solid #0073aa;
+    color: #0073aa;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.oj-save-view-btn:hover {
+    background: #0073aa;
+    color: white;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.2);
+}
+
+.oj-save-view-btn:active {
+    transform: translateY(0);
+}
+
+.oj-save-view-btn .oj-btn-icon {
+    font-size: 16px;
+}
+
+/* Saved Views List Container */
+.oj-saved-views-list {
+    min-height: 60px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    background: #f9f9f9;
+    padding: 12px;
+}
+
+/* Loading State */
+.oj-saved-views-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #646970;
+    font-size: 14px;
+    padding: 20px;
+}
+
+.oj-loading-spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Empty State */
+.oj-saved-views-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #646970;
+    font-size: 14px;
+    padding: 20px;
+    text-align: center;
+}
+
+.oj-empty-icon {
+    font-size: 24px;
+    opacity: 0.6;
+}
+
+/* Saved Views Items */
+.oj-saved-views-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Individual Saved View Item */
+.oj-saved-view-item {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 12px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.oj-saved-view-item:hover {
+    border-color: #0073aa;
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.1);
+    transform: translateY(-1px);
+}
+
+.oj-saved-view-item.selected {
+    border-color: #0073aa;
+    background: #f0f6fc;
+    box-shadow: 0 2px 8px rgba(0, 115, 170, 0.2);
+}
+
+.oj-saved-view-item.selected .oj-saved-view-name {
+    color: #0073aa;
+    font-weight: 700;
+}
+
+.oj-saved-view-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.oj-saved-view-name {
+    font-weight: 600;
+    color: #1d2327;
+    font-size: 14px;
+}
+
+.oj-saved-view-actions {
+    display: flex;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.oj-saved-view-item:hover .oj-saved-view-actions {
+    opacity: 1;
+}
+
+.oj-saved-view-action {
+    background: none;
+    border: none;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    min-width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.oj-saved-view-action:hover {
+    background: #f0f0f1;
+    transform: scale(1.1);
+}
+
+.oj-saved-view-action.load:hover {
+    background: #0073aa;
+    color: white;
+}
+
+.oj-saved-view-action.rename:hover {
+    background: #f57c00;
+    color: white;
+}
+
+.oj-saved-view-action.delete:hover {
+    background: #d63638;
+    color: white;
+}
+
+.oj-saved-view-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    color: #646970;
+}
+
+.oj-saved-view-filters {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #646970;
+    line-height: 1.4;
+}
+
+.oj-filter-tag {
+    display: inline-block;
+    background: #f0f6fc;
+    color: #0073aa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-right: 4px;
+    margin-bottom: 2px;
+    font-size: 11px;
+    font-weight: 500;
+}
+
+/* Save View Modal/Prompt Styling */
+.oj-save-view-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000002; /* Above the slide panel overlay */
+}
+
+.oj-save-view-modal-content {
+    background: white;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.oj-save-view-modal h3 {
+    margin: 0 0 16px 0;
+    color: #1d2327;
+    font-size: 18px;
+}
+
+.oj-save-view-modal input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.oj-save-view-modal-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+.oj-save-view-modal-actions button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.oj-save-view-modal-actions .primary {
+    background: #0073aa;
+    color: white;
+}
+
+.oj-save-view-modal-actions .primary:hover {
+    background: #005a87;
+}
+
+.oj-save-view-modal-actions .secondary {
+    background: #f0f0f1;
+    color: #1d2327;
+}
+
+.oj-save-view-modal-actions .secondary:hover {
+    background: #dcdcde;
+}
+
+/* ===================================
+   NOTIFICATIONS STYLING
+   =================================== */
+
+/* Notifications Container */
+.oj-notifications-container {
+    position: fixed;
+    top: 32px; /* Below WordPress admin bar */
+    right: 20px;
+    z-index: 1000001; /* Above the slide panel */
+    pointer-events: none; /* Allow clicks to pass through container */
+}
+
+/* Individual Notification */
+.oj-notification {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 300px;
+    max-width: 400px;
+    pointer-events: auto; /* Allow interaction with notifications */
+    animation: slideInRight 0.3s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Notification Types */
+.oj-notification-success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.oj-notification-error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.oj-notification-info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+
+/* Notification Elements */
+.oj-notification-icon {
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.oj-notification-message {
+    flex: 1;
+    line-height: 1.4;
+}
+
+.oj-notification-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.oj-notification-close:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+    /* Tab Navigation */
+    .oj-filters-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 16px 20px 12px 20px;
+    }
+    
+    .oj-filters-tabs {
+        order: 2;
+    }
+    
+    .oj-filters-close {
+        position: absolute;
+        top: 16px;
+        right: 20px;
+    }
+    
+    .oj-tab-btn {
+        padding: 12px 16px;
+        font-size: 13px;
+    }
+    
+    .oj-tab-icon {
+        font-size: 14px;
+    }
+    
+    /* Saved Views */
+    .oj-saved-view-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .oj-saved-view-actions {
+        opacity: 1; /* Always show on mobile */
+    }
+    
+    .oj-saved-view-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    
+    .oj-save-view-modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .oj-saved-views-stats {
+        flex-direction: column;
+        gap: 12px;
+    }
+}
+
+/* ===================================
+   AJAX LOADING STATES
+   =================================== */
+
+/* Loading overlay - Simple and elegant like saved views */
+.oj-loading-overlay {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000001;
+}
+
+.oj-loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.oj-spinner {
+    display: flex;
+    gap: 4px;
+}
+
+.oj-spinner-dot {
+    width: 6px;
+    height: 6px;
+    background: #999;
+    border-radius: 50%;
+    animation: oj-dot-bounce 1.4s ease-in-out infinite both;
+}
+
+.oj-spinner-dot:nth-child(1) { animation-delay: -0.32s; }
+.oj-spinner-dot:nth-child(2) { animation-delay: -0.16s; }
+.oj-spinner-dot:nth-child(3) { animation-delay: 0s; }
+
+@keyframes oj-dot-bounce {
+    0%, 80%, 100% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.oj-loading-spinner span {
+    color: #666;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+/* Content loading states */
+.oj-loading {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+/* Temporary messages */
+.oj-temp-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000002;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    border-left: 4px solid #007cba;
+    animation: slideInRight 0.3s ease;
+}
+
+.oj-temp-message-success {
+    border-left-color: #46b450;
+}
+
+.oj-temp-message-error {
+    border-left-color: #dc3232;
+}
+
+.oj-temp-message-info {
+    border-left-color: #007cba;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
