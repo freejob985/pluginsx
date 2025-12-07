@@ -4,6 +4,8 @@
  * Add this to functions.php temporarily to debug the is_returning_customer() method
  */
 
+
+ 
 function debug_returning_customer_method() {
     echo "<h2>🔍 Debug: WooCommerce is_returning_customer() Method</h2>";
     
