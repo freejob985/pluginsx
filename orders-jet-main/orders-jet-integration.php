@@ -200,6 +200,9 @@ class Orders_Jet_Integration {
         // Admin UI classes
         include_once ORDERS_JET_PLUGIN_DIR . 'includes/admin/class-orders-jet-waiter-tables-admin.php';
         
+        // Internal Addons Manager
+        include_once ORDERS_JET_PLUGIN_DIR . 'includes/class-orders-jet-internal-addons.php';
+        
         // Debug includes removed for production
     }
     
@@ -239,6 +242,9 @@ class Orders_Jet_Integration {
         
         // Initialize assets manager
         new Orders_Jet_Assets();
+        
+        // Initialize internal addons manager
+        new Orders_Jet_Internal_Addons();
     }
     
     /**
@@ -494,6 +500,12 @@ class Orders_Jet_Integration {
         
         // Create database tables if needed
         $this->create_tables();
+        
+        // Create addons directory
+        if (class_exists('Orders_Jet_Internal_Addons')) {
+            $addons_manager = new Orders_Jet_Internal_Addons();
+            $addons_manager->create_addons_directory();
+        }
     }
     
     /**
