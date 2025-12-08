@@ -97,8 +97,30 @@
                         );
                     }
                 },
-                error: function() {
-                    OJAddons.showNotice(ojAddons.strings.error, 'error');
+                error: function(xhr, status, error) {
+                    let errorMessage = ojAddons.strings.error;
+                    
+                    // Try to get detailed error from response
+                    if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                        errorMessage = xhr.responseJSON.data.message;
+                    } else if (xhr.responseText) {
+                        // If response is HTML error page
+                        if (xhr.responseText.includes('Fatal error') || xhr.responseText.includes('Parse error')) {
+                            errorMessage = 'خطأ في ملف الإضافة. يرجى التحقق من الملفات والمحاولة مرة أخرى.';
+                        } else {
+                            errorMessage = 'حدث خطأ في الاتصال بالخادم (HTTP ' + xhr.status + ')';
+                        }
+                    }
+                    
+                    OJAddons.showNotice(errorMessage, 'error');
+                    
+                    // Log full error for debugging
+                    console.error('AJAX Toggle Error:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText.substring(0, 500),
+                        error: error
+                    });
                 },
                 complete: function() {
                     $card.removeClass('loading');
@@ -166,8 +188,30 @@
                         );
                     }
                 },
-                error: function() {
-                    OJAddons.showNotice(ojAddons.strings.error, 'error');
+                error: function(xhr, status, error) {
+                    let errorMessage = ojAddons.strings.error;
+                    
+                    // Try to get detailed error from response
+                    if (xhr.responseJSON && xhr.responseJSON.data && xhr.responseJSON.data.message) {
+                        errorMessage = xhr.responseJSON.data.message;
+                    } else if (xhr.responseText) {
+                        // If response is HTML error page
+                        if (xhr.responseText.includes('Fatal error') || xhr.responseText.includes('Parse error')) {
+                            errorMessage = 'خطأ في حذف الإضافة. يرجى التحقق من صلاحيات الملفات.';
+                        } else {
+                            errorMessage = 'حدث خطأ في الاتصال بالخادم (HTTP ' + xhr.status + ')';
+                        }
+                    }
+                    
+                    OJAddons.showNotice(errorMessage, 'error');
+                    
+                    // Log full error for debugging
+                    console.error('AJAX Delete Error:', {
+                        status: xhr.status,
+                        statusText: xhr.statusText,
+                        responseText: xhr.responseText.substring(0, 500),
+                        error: error
+                    });
                 },
                 complete: function() {
                     $card.removeClass('loading');

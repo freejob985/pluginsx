@@ -1,0 +1,175 @@
+/* WP PWA Converter - Frontend Styles */
+
+/* أنماط لزر التثبيت */
+.wp-pwa-install-prompt {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    max-width: 300px;
+    z-index: 9999;
+    display: none;
+}
+
+.wp-pwa-install-prompt.show {
+    display: block;
+    animation: slideInUp 0.3s ease-out;
+}
+
+.wp-pwa-install-prompt h3 {
+    margin: 0 0 10px 0;
+    font-size: 18px;
+}
+
+.wp-pwa-install-prompt p {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.wp-pwa-install-prompt .buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.wp-pwa-install-prompt button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.wp-pwa-install-prompt .install-btn {
+    background: #2271b1;
+    color: #fff;
+}
+
+.wp-pwa-install-prompt .install-btn:hover {
+    background: #135e96;
+}
+
+.wp-pwa-install-prompt .dismiss-btn {
+    background: #f0f0f1;
+    color: #2c3338;
+}
+
+.wp-pwa-install-prompt .dismiss-btn:hover {
+    background: #dcdcde;
+}
+
+/* إشعار Offline */
+.wp-pwa-offline-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #dc3232;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    z-index: 9999;
+    display: none;
+}
+
+.wp-pwa-offline-indicator.show {
+    display: block;
+    animation: slideInDown 0.3s ease-out;
+}
+
+.wp-pwa-online-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: #46b450;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    z-index: 9999;
+    display: none;
+}
+
+.wp-pwa-online-indicator.show {
+    display: block;
+    animation: slideInDown 0.3s ease-out;
+}
+
+/* رسائل التحديث */
+.wp-pwa-update-prompt {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #2271b1;
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+    display: none;
+}
+
+.wp-pwa-update-prompt.show {
+    display: block;
+    animation: slideInUp 0.3s ease-out;
+}
+
+.wp-pwa-update-prompt button {
+    margin-left: 15px;
+    padding: 8px 15px;
+    background: #fff;
+    color: #2271b1;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.wp-pwa-update-prompt button:hover {
+    background: #f0f0f1;
+}
+
+/* رسوم متحركة */
+@keyframes slideInUp {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media screen and (max-width: 600px) {
+    .wp-pwa-install-prompt {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .wp-pwa-update-prompt {
+        left: 10px;
+        right: 10px;
+        transform: none;
+    }
+}

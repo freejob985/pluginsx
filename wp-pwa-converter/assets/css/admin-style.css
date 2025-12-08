@@ -1,0 +1,326 @@
+/* WP PWA Converter - Admin Styles */
+
+.wp-pwa-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.wp-pwa-main-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.wp-pwa-sidebar {
+    width: 300px;
+    flex-shrink: 0;
+}
+
+.wp-pwa-card {
+    background: #fff;
+    border: 1px solid #ccd0d4;
+    box-shadow: 0 1px 1px rgba(0,0,0,.04);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.wp-pwa-card h2,
+.wp-pwa-card h3 {
+    margin-top: 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+/* أنماط رفع الأيقونات */
+.wp-pwa-icon-upload {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.wp-pwa-icon-preview {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+}
+
+.wp-pwa-icon-preview img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+}
+
+.wp-pwa-remove-icon {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #dc3232;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    line-height: 1;
+    padding: 0;
+}
+
+.wp-pwa-remove-icon:hover {
+    background: #a00;
+}
+
+/* معاينة الجهاز */
+.wp-pwa-preview-device {
+    border: 2px solid #333;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.preview-header {
+    padding: 15px;
+    color: #fff;
+    text-align: center;
+    font-weight: bold;
+}
+
+.preview-body {
+    padding: 40px 20px;
+    text-align: center;
+    min-height: 200px;
+}
+
+.preview-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 15px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.preview-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preview-icon-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+/* روابط سريعة */
+.wp-pwa-quick-links {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.wp-pwa-quick-links li {
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.wp-pwa-quick-links li:last-child {
+    border-bottom: none;
+}
+
+.wp-pwa-quick-links a {
+    text-decoration: none;
+    color: #2271b1;
+}
+
+.wp-pwa-quick-links a:hover {
+    color: #135e96;
+}
+
+/* نصائح */
+.wp-pwa-tips {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.wp-pwa-tips li {
+    padding: 8px 0 8px 25px;
+    position: relative;
+}
+
+.wp-pwa-tips li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #46b450;
+    font-weight: bold;
+}
+
+/* نتائج الاختبار */
+#pwa-test-results .test-item {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#pwa-test-results .test-item.success {
+    background: #d4edda;
+    color: #155724;
+}
+
+#pwa-test-results .test-item.error {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+#pwa-test-results .test-item.warning {
+    background: #fff3cd;
+    color: #856404;
+}
+
+#pwa-test-results .test-item:before {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+#pwa-test-results .test-item.success:before {
+    content: "✓";
+}
+
+#pwa-test-results .test-item.error:before {
+    content: "✗";
+}
+
+#pwa-test-results .test-item.warning:before {
+    content: "⚠";
+}
+
+/* قائمة الملفات المخزنة */
+.wp-pwa-cached-files {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.wp-pwa-cached-files li {
+    padding: 8px 0 8px 25px;
+    position: relative;
+    border-bottom: 1px solid #eee;
+}
+
+.wp-pwa-cached-files li:before {
+    content: "📄";
+    position: absolute;
+    left: 0;
+}
+
+/* دليل الاستراتيجيات */
+.wp-pwa-strategy-guide h4 {
+    margin-top: 15px;
+    margin-bottom: 5px;
+    color: #2271b1;
+}
+
+.wp-pwa-strategy-guide p {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    font-size: 13px;
+    color: #666;
+}
+
+/* خطوات الإعداد */
+.wp-pwa-setup-steps {
+    padding-left: 20px;
+}
+
+.wp-pwa-setup-steps li {
+    margin-bottom: 15px;
+}
+
+.wp-pwa-setup-steps strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #2271b1;
+}
+
+/* معلومات الإشعارات */
+.wp-pwa-notifications-info ol {
+    padding-left: 20px;
+}
+
+.wp-pwa-notifications-info li {
+    margin-bottom: 10px;
+}
+
+/* تحسينات للشاشات الصغيرة */
+@media screen and (max-width: 782px) {
+    .wp-pwa-container {
+        flex-direction: column;
+    }
+    
+    .wp-pwa-sidebar {
+        width: 100%;
+    }
+    
+    .wp-pwa-icon-upload {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* تحميل */
+.wp-pwa-loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #2271b1;
+    border-radius: 50%;
+    animation: wp-pwa-spin 1s linear infinite;
+}
+
+@keyframes wp-pwa-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* إشعارات النجاح والخطأ */
+.wp-pwa-notice {
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border-left: 4px solid;
+}
+
+.wp-pwa-notice.success {
+    background: #d4edda;
+    border-color: #46b450;
+    color: #155724;
+}
+
+.wp-pwa-notice.error {
+    background: #f8d7da;
+    border-color: #dc3232;
+    color: #721c24;
+}
+
+.wp-pwa-notice.info {
+    background: #d1ecf1;
+    border-color: #2271b1;
+    color: #0c5460;
+}
