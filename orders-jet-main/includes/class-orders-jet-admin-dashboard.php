@@ -57,6 +57,12 @@ class Orders_Jet_Admin_Dashboard {
         add_action('wp_ajax_oj_reports_drill_down', array($this, 'ajax_reports_drill_down'));
         add_action('wp_ajax_oj_reports_export', array($this, 'ajax_reports_export'));
         add_action('wp_ajax_oj_export_order_pdf', array($this, 'ajax_export_order_pdf'));
+        
+        // Table Sessions & Reports AJAX handlers
+        add_action('wp_ajax_oj_open_table_session', array($this, 'ajax_open_table_session'));
+        add_action('wp_ajax_oj_close_table_session', array($this, 'ajax_close_table_session'));
+        add_action('wp_ajax_oj_move_table', array($this, 'ajax_move_table'));
+        add_action('wp_ajax_oj_merge_tables', array($this, 'ajax_merge_tables'));
     }
     
     /**
@@ -186,6 +192,26 @@ class Orders_Jet_Admin_Dashboard {
                 'table-assignment',
                 array($this, 'render_table_assignment')
             );
+            
+            // Table Overview (available to managers and admins)
+            add_submenu_page(
+                'orders-overview',
+                __('Table Overview', 'orders-jet'),
+                __('🍽️ Table Overview', 'orders-jet'),
+                'access_oj_manager_dashboard',
+                'table-overview',
+                array($this, 'render_table_overview')
+            );
+            
+            // Table Assignment + Reports (available to managers and admins)
+            add_submenu_page(
+                'orders-overview',
+                __('Table Sessions & Reports', 'orders-jet'),
+                __('📊 Table Sessions & Reports', 'orders-jet'),
+                'access_oj_manager_dashboard',
+                'table-sessions-reports',
+                array($this, 'render_table_sessions_reports')
+            );
         }
     }
     
@@ -202,7 +228,9 @@ class Orders_Jet_Admin_Dashboard {
             'orders_page_business-intelligence', // NEW: Business Intelligence
             'orders_page_orders-dev-tools',
             'orders_page_waiter-orders', // Waiter View (Phase 3)
-            'orders_page_table-assignment' // Table Assignment
+            'orders_page_table-assignment', // Table Assignment
+            'orders_page_table-overview', // Table Overview
+            'orders_page_table-sessions-reports' // Table Sessions & Reports
         );
         
         // Future Phase Pages (Commented out - will be restored later)
@@ -1053,6 +1081,42 @@ class Orders_Jet_Admin_Dashboard {
             include $template_path;
         } else {
             wp_die(__('Table assignment template not found.', 'orders-jet'));
+        }
+    }
+    
+    /**
+     * Render Table Overview page
+     */
+    public function render_table_overview() {
+        // Check permissions
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_die(__('You do not have permission to access this page.', 'orders-jet'));
+        }
+        
+        // Load the table overview template
+        $template_path = ORDERS_JET_PLUGIN_DIR . 'templates/admin/table-overview.php';
+        if (file_exists($template_path)) {
+            include $template_path;
+        } else {
+            wp_die(__('Table overview template not found.', 'orders-jet'));
+        }
+    }
+    
+    /**
+     * Render Table Sessions & Reports page
+     */
+    public function render_table_sessions_reports() {
+        // Check permissions
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_die(__('You do not have permission to access this page.', 'orders-jet'));
+        }
+        
+        // Load the table sessions and reports template
+        $template_path = ORDERS_JET_PLUGIN_DIR . 'templates/admin/table-sessions-reports.php';
+        if (file_exists($template_path)) {
+            include $template_path;
+        } else {
+            wp_die(__('Table sessions and reports template not found.', 'orders-jet'));
         }
     }
     
@@ -3776,6 +3840,214 @@ class Orders_Jet_Admin_Dashboard {
                 'message' => $e->getMessage(),
             ));
         }
+    }
+    
+    /**
+     * AJAX: Open table session
+     */
+    public function ajax_open_table_session() {
+        check_ajax_referer('oj_table_sessions_nonce', 'nonce');
+        
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Permission denied', 'orders-jet')));
+        }
+        
+        $table_number = isset($_POST['table_number']) ? sanitize_text_field($_POST['table_number']) : '';
+        $waiter_id = isset($_POST['waiter_id']) ? intval($_POST['waiter_id']) : 0;
+        
+        if (empty($table_number)) {
+            wp_send_json_error(array('message' => __('Table number is required', 'orders-jet')));
+        }
+        
+        try {
+            // Get handler instance
+            $handler_factory = new Orders_Jet_Handler_Factory(
+                new Orders_Jet_Tax_Service(),
+                new Orders_Jet_Kitchen_Service(),
+                new Orders_Jet_Notification_Service()
+            );
+            $assignment_handler = $handler_factory->get_table_assignment_handler();
+            
+            // Assign waiter if provided
+            if ($waiter_id > 0) {
+                $assignment_handler->assign_table($table_number, $waiter_id);
+            }
+            
+            // Update table status to occupied
+            $table_id = $this->get_table_id_by_number($table_number);
+            if ($table_id) {
+                update_post_meta($table_id, WooJet_Meta_Keys::TABLE_STATUS, 'occupied');
+            }
+            
+            wp_send_json_success(array(
+                'message' => sprintf(__('Session opened for table %s', 'orders-jet'), $table_number)
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * AJAX: Close table session
+     */
+    public function ajax_close_table_session() {
+        check_ajax_referer('oj_table_sessions_nonce', 'nonce');
+        
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Permission denied', 'orders-jet')));
+        }
+        
+        $table_number = isset($_POST['table_number']) ? sanitize_text_field($_POST['table_number']) : '';
+        
+        if (empty($table_number)) {
+            wp_send_json_error(array('message' => __('Table number is required', 'orders-jet')));
+        }
+        
+        try {
+            // Update table status to available
+            $table_id = $this->get_table_id_by_number($table_number);
+            if ($table_id) {
+                update_post_meta($table_id, WooJet_Meta_Keys::TABLE_STATUS, 'available');
+            }
+            
+            wp_send_json_success(array(
+                'message' => sprintf(__('Session closed for table %s', 'orders-jet'), $table_number)
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * AJAX: Move table (change assignment)
+     */
+    public function ajax_move_table() {
+        check_ajax_referer('oj_table_sessions_nonce', 'nonce');
+        
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Permission denied', 'orders-jet')));
+        }
+        
+        $table_number = isset($_POST['table_number']) ? sanitize_text_field($_POST['table_number']) : '';
+        $new_table_number = isset($_POST['new_table_number']) ? sanitize_text_field($_POST['new_table_number']) : '';
+        
+        if (empty($table_number) || empty($new_table_number)) {
+            wp_send_json_error(array('message' => __('Table numbers are required', 'orders-jet')));
+        }
+        
+        try {
+            global $wpdb;
+            
+            // Move all orders from source table to target table
+            $wpdb->update(
+                $wpdb->postmeta,
+                array('meta_value' => $new_table_number),
+                array(
+                    'meta_key' => WooJet_Meta_Keys::TABLE_NUMBER,
+                    'meta_value' => $table_number
+                )
+            );
+            
+            // Update source table status to available
+            $source_table_id = $this->get_table_id_by_number($table_number);
+            if ($source_table_id) {
+                update_post_meta($source_table_id, WooJet_Meta_Keys::TABLE_STATUS, 'available');
+            }
+            
+            // Update target table status to occupied
+            $target_table_id = $this->get_table_id_by_number($new_table_number);
+            if ($target_table_id) {
+                update_post_meta($target_table_id, WooJet_Meta_Keys::TABLE_STATUS, 'occupied');
+            }
+            
+            wp_send_json_success(array(
+                'message' => sprintf(__('Table %s moved to %s', 'orders-jet'), $table_number, $new_table_number)
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * AJAX: Merge tables
+     */
+    public function ajax_merge_tables() {
+        check_ajax_referer('oj_table_sessions_nonce', 'nonce');
+        
+        if (!current_user_can('access_oj_manager_dashboard') && !current_user_can('manage_options')) {
+            wp_send_json_error(array('message' => __('Permission denied', 'orders-jet')));
+        }
+        
+        $source_table = isset($_POST['source_table']) ? sanitize_text_field($_POST['source_table']) : '';
+        $target_table = isset($_POST['target_table']) ? sanitize_text_field($_POST['target_table']) : '';
+        
+        if (empty($source_table) || empty($target_table)) {
+            wp_send_json_error(array('message' => __('Both table numbers are required', 'orders-jet')));
+        }
+        
+        if ($source_table === $target_table) {
+            wp_send_json_error(array('message' => __('Cannot merge table with itself', 'orders-jet')));
+        }
+        
+        try {
+            global $wpdb;
+            
+            // Move all orders from source table to target table
+            $wpdb->update(
+                $wpdb->postmeta,
+                array('meta_value' => $target_table),
+                array(
+                    'meta_key' => WooJet_Meta_Keys::TABLE_NUMBER,
+                    'meta_value' => $source_table
+                )
+            );
+            
+            // Update source table status to available
+            $source_table_id = $this->get_table_id_by_number($source_table);
+            if ($source_table_id) {
+                update_post_meta($source_table_id, WooJet_Meta_Keys::TABLE_STATUS, 'available');
+            }
+            
+            // Update target table status to occupied
+            $target_table_id = $this->get_table_id_by_number($target_table);
+            if ($target_table_id) {
+                update_post_meta($target_table_id, WooJet_Meta_Keys::TABLE_STATUS, 'occupied');
+            }
+            
+            wp_send_json_success(array(
+                'message' => sprintf(__('Table %s merged into %s', 'orders-jet'), $source_table, $target_table)
+            ));
+        } catch (Exception $e) {
+            wp_send_json_error(array(
+                'message' => $e->getMessage()
+            ));
+        }
+    }
+    
+    /**
+     * Helper: Get table ID by table number
+     */
+    private function get_table_id_by_number($table_number) {
+        global $wpdb;
+        
+        $table_id = $wpdb->get_var($wpdb->prepare("
+            SELECT p.ID 
+            FROM {$wpdb->posts} p
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id
+            WHERE p.post_type = 'oj_table'
+            AND p.post_status = 'publish'
+            AND pm.meta_key = %s
+            AND pm.meta_value = %s
+            LIMIT 1
+        ", WooJet_Meta_Keys::TABLE_POST_NUMBER, $table_number));
+        
+        return $table_id ? intval($table_id) : null;
     }
 }
 

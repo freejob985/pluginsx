@@ -418,17 +418,22 @@ class Orders_Jet_Table_Management {
      * Enqueue admin scripts and styles
      */
     public function admin_enqueue_scripts($hook) {
-        if ($hook !== 'edit.php' || get_post_type() !== 'oj_table') {
-            return;
+        // Load on table list page
+        if ($hook === 'edit.php' && get_post_type() === 'oj_table') {
+            wp_enqueue_style('orders-jet-admin', ORDERS_JET_PLUGIN_URL . 'assets/css/admin.css', array(), ORDERS_JET_VERSION);
+            wp_enqueue_style('oj-table-master', ORDERS_JET_PLUGIN_URL . 'assets/css/table-master.css', array('orders-jet-admin'), ORDERS_JET_VERSION);
+            wp_enqueue_script('orders-jet-admin', ORDERS_JET_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), ORDERS_JET_VERSION, true);
+            
+            wp_localize_script('orders-jet-admin', 'oj_admin', array(
+                'ajax_url' => admin_url('admin-ajax.php'),
+                'nonce' => wp_create_nonce('oj_table_nonce')
+            ));
         }
         
-        wp_enqueue_style('orders-jet-admin', ORDERS_JET_PLUGIN_URL . 'assets/css/admin.css', array(), ORDERS_JET_VERSION);
-        wp_enqueue_script('orders-jet-admin', ORDERS_JET_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), ORDERS_JET_VERSION, true);
-        
-        wp_localize_script('orders-jet-admin', 'oj_admin', array(
-            'ajax_url' => admin_url('admin-ajax.php'),
-            'nonce' => wp_create_nonce('oj_table_nonce')
-        ));
+        // Load on table edit page
+        if (($hook === 'post.php' || $hook === 'post-new.php') && get_post_type() === 'oj_table') {
+            wp_enqueue_style('oj-table-master', ORDERS_JET_PLUGIN_URL . 'assets/css/table-master.css', array(), ORDERS_JET_VERSION);
+        }
     }
     
     /**

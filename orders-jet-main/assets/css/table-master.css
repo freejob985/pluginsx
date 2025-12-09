@@ -1,0 +1,225 @@
+/**
+ * Table Master CRUD Page Styles
+ * Enhanced design for table management page
+ */
+
+/* Override WordPress default styles for table list */
+.post-type-oj_table .wp-list-table {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post-type-oj_table .wp-list-table thead th {
+    background: #f5f5f5;
+    font-weight: 600;
+    padding: 15px;
+    border-bottom: 2px solid #ddd;
+}
+
+.post-type-oj_table .wp-list-table tbody td {
+    padding: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.post-type-oj_table .wp-list-table tbody tr:hover {
+    background: #f9f9f9;
+}
+
+/* Status badges */
+.oj-status-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.oj-status-available {
+    background: #e8f5e9;
+    color: #4caf50;
+}
+
+.oj-status-occupied {
+    background: #fff3e0;
+    color: #ff9800;
+}
+
+.oj-status-reserved {
+    background: #ffebee;
+    color: #f44336;
+}
+
+.oj-status-maintenance {
+    background: #f5f5f5;
+    color: #9e9e9e;
+}
+
+/* Enhanced meta box styles */
+.post-type-oj_table #oj_table_details .inside {
+    padding: 20px;
+}
+
+.post-type-oj_table .form-table th {
+    width: 200px;
+    padding: 15px 10px 15px 0;
+    font-weight: 500;
+}
+
+.post-type-oj_table .form-table td {
+    padding: 15px 10px;
+}
+
+.post-type-oj_table .form-table input[type="text"],
+.post-type-oj_table .form-table input[type="number"],
+.post-type-oj_table .form-table select {
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 400px;
+    transition: border-color 0.2s;
+}
+
+.post-type-oj_table .form-table input:focus,
+.post-type-oj_table .form-table select:focus {
+    border-color: #0073aa;
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 115, 170, 0.1);
+}
+
+/* QR Code meta box */
+#oj_table_qr_code .inside {
+    padding: 20px;
+    text-align: center;
+}
+
+.oj-qr-code-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.oj-qr-code-image {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.oj-qr-code-image img {
+    max-width: 250px;
+    height: auto;
+}
+
+.oj-qr-code-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.oj-qr-code-url {
+    width: 100%;
+    margin-top: 15px;
+}
+
+.oj-qr-code-url label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+}
+
+.oj-qr-code-url input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 12px;
+    font-family: monospace;
+}
+
+/* Bulk actions */
+.post-type-oj_table .bulkactions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.post-type-oj_table .bulkactions select {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+/* Add new table button */
+.post-type-oj_table .page-title-action {
+    background: #0073aa;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.post-type-oj_table .page-title-action:hover {
+    background: #005a87;
+    color: white;
+}
+
+/* Enhanced table columns */
+.post-type-oj_table .column-oj_table_number {
+    font-weight: 600;
+    font-size: 16px;
+    color: #23282d;
+}
+
+.post-type-oj_table .column-oj_table_capacity::before {
+    content: '👥 ';
+}
+
+.post-type-oj_table .column-oj_table_location::before {
+    content: '📍 ';
+}
+
+/* Action links */
+.post-type-oj_table .row-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.post-type-oj_table .row-actions a {
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.post-type-oj_table .row-actions a:hover {
+    background: #f0f0f0;
+}
+
+/* Responsive */
+@media (max-width: 782px) {
+    .post-type-oj_table .form-table th,
+    .post-type-oj_table .form-table td {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+    }
+    
+    .oj-qr-code-actions {
+        flex-direction: column;
+    }
+    
+    .oj-qr-code-actions .button {
+        width: 100%;
+    }
+}
+
