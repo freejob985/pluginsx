@@ -8,12 +8,16 @@
     
     const TableSessions = {
         
+
+        
         /**
          * Initialize
          */
         init: function() {
             this.bindEvents();
         },
+
+
         
         /**
          * Bind event handlers

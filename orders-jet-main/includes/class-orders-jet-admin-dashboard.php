@@ -52,6 +52,8 @@ class Orders_Jet_Admin_Dashboard {
         // Orders Overview AJAX handlers
         add_action('wp_ajax_oj_get_overview_data', array($this, 'ajax_get_overview_data'));
         
+
+
         // Orders Reports AJAX handlers
         add_action('wp_ajax_oj_reports_get_data', array($this, 'ajax_reports_get_data'));
         add_action('wp_ajax_oj_reports_drill_down', array($this, 'ajax_reports_drill_down'));
@@ -181,6 +183,9 @@ class Orders_Jet_Admin_Dashboard {
                 array($this, 'render_waiter_orders')
             );
         }
+
+
+
         
         // Table Assignment (available to managers and admins)
         if (current_user_can('access_oj_manager_dashboard') || current_user_can('manage_options')) {
@@ -215,6 +220,8 @@ class Orders_Jet_Admin_Dashboard {
         }
     }
     
+
+
     /**
      * Enqueue dashboard assets
      */
@@ -1065,6 +1072,8 @@ class Orders_Jet_Admin_Dashboard {
             wp_die(__('Waiter view template not found.', 'orders-jet'));
         }
     }
+
+    
     
     /**
      * Render table assignment page
@@ -3841,7 +3850,9 @@ class Orders_Jet_Admin_Dashboard {
             ));
         }
     }
+
     
+
     /**
      * AJAX: Open table session
      */
